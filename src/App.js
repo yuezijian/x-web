@@ -6,7 +6,27 @@ import { ApolloProvider } from '@apollo/react-hooks';
 import { Query          } from '@apollo/react-components';
 
 
-const client = new ApolloClient({ uri: 'http://localhost:4000/graphql' });
+const config =
+  {
+    uri: 'http://localhost:4000/graphql',
+
+    request: (operation) =>
+    {
+      const token = '';
+
+      const context =
+        {
+          headers:
+            {
+              authorization: `Bearer ${ token }`
+            }
+        };
+
+      operation.setContext(context);
+    }
+  }
+
+const client = new ApolloClient(config);
 
 
 function App()
