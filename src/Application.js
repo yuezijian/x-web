@@ -5,7 +5,6 @@ import Row       from 'react-bootstrap/Row';
 import Col       from 'react-bootstrap/Col';
 
 import Button from 'react-bootstrap/Button';
-import Card   from 'react-bootstrap/Card';
 import Form   from 'react-bootstrap/Form';
 import Table  from 'react-bootstrap/Table';
 
@@ -13,9 +12,9 @@ import
 {
   BrowserRouter, Route, Switch, Redirect
 }
-from 'react-router-dom';
+  from 'react-router-dom';
 
-import { LinkContainer } from 'react-router-bootstrap';
+import { withCookies } from 'react-cookie';
 
 import ApolloClient, { gql } from 'apollo-boost';
 
@@ -24,8 +23,8 @@ import { Query, Mutation } from '@apollo/react-components';
 
 import Authorization from './Authorization';
 
-import Login from './Login';
-
+import Login      from './Login';
+import Navigation from './Navigation';
 
 const gql_request =
   {
@@ -59,28 +58,6 @@ const gql_request =
       `
   };
 
-
-let g_token = '';
-
-const config =
-  {
-    uri: 'http://localhost:4000/graphql',
-
-    request: (operation) =>
-    {
-      const context =
-        {
-          headers:
-            {
-              authorization: `Bearer ${ g_token }`
-            }
-        };
-
-      operation.setContext(context);
-    }
-  }
-
-const client = new ApolloClient(config);
 
 function render_form(mutate)
 {
@@ -177,7 +154,7 @@ function render_query()
 }
 
 
-function render_content()
+function render_content(client)
 {
   const element =
 
@@ -196,43 +173,91 @@ function render_content()
 }
 
 
+function RoutePrivate({ children, ...props })
+{
+  const redirect = (from) => <Redirect to={ { pathname: '/login', state: { from } } }/>;
+
+  const element =
+    <
+      Route
+      {
+        ...props
+      }
+      render = { ({ location }) => props.user.token ? children : redirect(location) }
+    />
+  ;
+
+  return element;
+}
+
+
 class Application extends React.Component
 {
   constructor(props)
   {
     super(props);
 
+    const { cookies } = props;
+
+    cookies.remove('token');
+
     this.state =
       {
-        token: null
+        token: cookies.get('token')
       };
+
+    const config =
+      {
+        uri: 'http://localhost:4000/graphql',
+
+        request: (operation) =>
+        {
+          const context =
+            {
+              headers:
+                {
+                  authorization: `Bearer ${ this.state.token }`
+                }
+            };
+
+          operation.setContext(context);
+        }
+      };
+
+    this.client = new ApolloClient(config);
   }
 
   render()
   {
     const login = (token) =>
     {
+      const { cookies } = this.props;
+
+      cookies.set('token', token, { maxAge: 30 });
+
       this.setState({ token });
     };
 
     const element =
 
-      <Container className='p-3'>
-        <Authorization.Provider value={ { login } }>
+      <Authorization.Provider value={ { login } }>
+        <Container>
           <BrowserRouter>
-            <LinkContainer to='/'><div>root</div></LinkContainer>
-            <LinkContainer to='/login'><div>login</div></LinkContainer>
+            <Navigation/>
             <Switch>
               <Route path='/' exact={ true }>
-                {
-                  this.state.token ? render_content() : <Redirect to='/login'/>
-                }
+                <div>hi</div>
               </Route>
               <Route path='/login' component={ Login }/>
+              <RoutePrivate path='/management' user={ { token: this.state.token } }>
+                {
+                  render_content(this.client)
+                }
+              </RoutePrivate>
             </Switch>
           </BrowserRouter>
-        </Authorization.Provider>
-      </Container>
+        </Container>
+      </Authorization.Provider>
     ;
 
     return element;
@@ -240,4 +265,4 @@ class Application extends React.Component
 }
 
 
-export default Application;
+export default withCookies(Application);

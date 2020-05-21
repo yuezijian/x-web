@@ -1,9 +1,18 @@
 import React    from 'react';
 import ReactDOM from 'react-dom';
 
-import Application from './Application.js';
+import { CookiesProvider } from 'react-cookie';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+import Application from './Application.js';
 
-ReactDOM.render(<Application/>, document.getElementById('root'));
+
+const element =
+
+  <CookiesProvider>
+    <Application/>
+  </CookiesProvider>
+;
+
+ReactDOM.render(element, document.getElementById('root'));
