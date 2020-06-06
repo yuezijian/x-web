@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { gql } from 'apollo-boost';
+
 import { Query } from '@apollo/react-components';
 
 
@@ -7,7 +9,7 @@ function XQuery(props)
 {
   const element =
 
-    <Query query={ props.query }>
+    <Query query={ gql(props.query) }>
       {
         ({ loading, error, data, networkStatus, subscribeToMore }) =>
         {
@@ -21,29 +23,7 @@ function XQuery(props)
             return <p>{ error.toString() }</p>;
           }
 
-          const subscribe = () =>
-          {
-            const option =
-              {
-                document: props.document,
-
-                updateQuery: (previous, { subscriptionData }) =>
-                {
-                  if (!subscriptionData.data)
-                  {
-                    return previous;
-                  }
-
-                  const item = subscriptionData.data.item_add;
-
-                  return Object.assign({}, previous, { items: [...previous.items, item] });
-                }
-              };
-
-            subscribeToMore(option)
-          };
-
-          return props.component(data, subscribe);
+          return props.children(data, subscribeToMore);
         }
       }
     </Query>
