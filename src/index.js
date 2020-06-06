@@ -5,7 +5,7 @@ import { CookiesProvider } from 'react-cookie';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import Application from './Application.js';
+import Application from './component/Application.js';
 
 
 const element =

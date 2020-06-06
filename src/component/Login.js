@@ -47,7 +47,7 @@ class Login extends React.Component
           {
             user:
               {
-                name:     'yzj',
+                name:     '',
                 password: ''
               }
           }
