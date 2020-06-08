@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Container from 'react-bootstrap/Container';
+
+import Col from 'react-bootstrap/Col';
+import Row from 'react-bootstrap/Row';
 
 import
 {
@@ -13,6 +16,8 @@ import { withCookies } from 'react-cookie';
 import { gql } from 'apollo-boost';
 
 import { ApolloProvider  } from '@apollo/react-hooks';
+
+import { Subscription } from '@apollo/react-components';
 
 import client from '../client.js';
 
@@ -59,6 +64,7 @@ const gql_request =
         }
       `
   };
+
 
 
 class Application extends React.Component
@@ -110,23 +116,30 @@ class Application extends React.Component
                 </Route>
                 <Route path='/login' component={ Login }/>
                 <Route path='/management' user={ { token: this.state.token } }>
-                  <XMutation mutation={ gql_request.item_add }>
-                    {
-                      (submit) =>
-                      {
-                        return <XForm submit={ submit }/>;
-                      }
-                    }
-                  </XMutation>
-                  <p/>
-                  <XQuery query={ gql_request.items }>
-                    {
-                      (data, subscribe) =>
-                      {
-                        return <XTable data={ data } subscribe={ subscribe }/>;
-                      }
-                    }
-                  </XQuery>
+                  <Row className='my-2'>
+                    <Col>
+                      <XMutation mutation={ gql_request.item_add }>
+                        {
+                          (submit) =>
+                          {
+                            return <XForm submit={ submit }/>;
+                          }
+                        }
+                      </XMutation>
+                    </Col>
+                  </Row>
+                  <Row className='my-2'>
+                    <Col>
+                      <XQuery query={ gql_request.items }>
+                        {
+                          (data, subscribe) =>
+                          {
+                            return <XTable data={ data } subscribe={ subscribe }/>;
+                          }
+                        }
+                      </XQuery>
+                    </Col>
+                  </Row>
                 </Route>
               </Switch>
             </BrowserRouter>

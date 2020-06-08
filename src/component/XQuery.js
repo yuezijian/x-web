@@ -1,5 +1,7 @@
 import React from 'react';
 
+import Spinner from 'react-bootstrap/Spinner';
+
 import { gql } from 'apollo-boost';
 
 import { Query } from '@apollo/react-components';
@@ -15,7 +17,7 @@ function XQuery(props)
         {
           if (loading)
           {
-            return <p>加载中...</p>;
+            return <Spinner size='sm' animation='border'/>;
           }
 
           if (error)

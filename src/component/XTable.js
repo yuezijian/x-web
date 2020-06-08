@@ -7,8 +7,6 @@ import Table  from 'react-bootstrap/Table';
 
 import XMutation from './XMutation';
 
-import XForm from './XForm';
-
 
 const gql_request =
   {
