@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import Container from 'react-bootstrap/Container';
 
@@ -8,22 +8,12 @@ import Row from 'react-bootstrap/Row';
 import
 {
   BrowserRouter, Route, Switch
-}
-from 'react-router-dom';
+} from 'react-router-dom';
 
-import { withCookies } from 'react-cookie';
-
-import { gql } from 'apollo-boost';
-
-import { ApolloProvider  } from '@apollo/react-hooks';
-
-import { Subscription } from '@apollo/react-components';
-
-import client from '../client.js';
+// import { Subscription } from '@apollo/react-components';
 
 import Authorization from './Authorization';
 
-import Login      from './Login';
 import Navigation from './Navigation';
 
 import XMutation from './XMutation';
@@ -32,120 +22,54 @@ import XQuery    from './XQuery';
 import XForm  from './XForm';
 import XTable from './XTable';
 
-
-const gql_request =
-  {
-    items:
-      `
-        query
-        {
-          items
-          {
-            id
-            name
-          }
-        }
-      `,
-
-    item_add:
-      `
-        mutation($text: String!)
-        {
-          item_add(name: $text)
-          {
-            success
-            message
-            item
-            {
-              id
-              name
-            }
-          }
-        }
-      `
-  };
-
+import gql_request from '../gql_request';
 
 
 class Application extends React.Component
 {
-  constructor(props)
-  {
-    super(props);
-
-    const { cookies } = props;
-
-    this.state =
-      {
-        token: cookies.get('token'),
-
-        text: ''
-      };
-
-    // this.client = create_client(() => this.state.token);
-    this.client = client;
-
-    this.subscribe = null;
-  }
-
-  componentDidMount()
-  {
-  }
-
   render()
   {
-    const login = (token) =>
-    {
-      const { cookies } = this.props;
-
-      cookies.set('token', token, { maxAge: 30 });
-
-      this.setState({ token });
-    };
-
     const element =
 
-      <ApolloProvider client={ this.client }>
-        <Authorization.Provider value={ { login } }>
-          <Container>
-            <BrowserRouter>
-              <Navigation/>
-              <Switch>
-                <Route path='/' exact={ true }>
-                  <div>hi</div>
-                </Route>
-                <Route path='/login' component={ Login }/>
-                <Route path='/management' user={ { token: this.state.token } }>
-                  <Row className='my-2'>
-                    <Col>
-                      <XMutation mutation={ gql_request.item_add }>
+      <Authorization>
+        <BrowserRouter>
+          <Switch>
+            <Route path='/' exact={ true }>
+              <Container>
+                <Row className='my-3'>
+                  <Col>
+                    <Navigation/>
+                  </Col>
+                </Row>
+                <Row className='my-3'>
+                  <Col>
+                    <XMutation mutation={ gql_request.item_add }>
+                      {
+                        (submit) =>
                         {
-                          (submit) =>
-                          {
-                            return <XForm submit={ submit }/>;
-                          }
+                          return <XForm submit={ submit }/>;
                         }
-                      </XMutation>
-                    </Col>
-                  </Row>
-                  <Row className='my-2'>
-                    <Col>
-                      <XQuery query={ gql_request.items }>
+                      }
+                    </XMutation>
+                  </Col>
+                </Row>
+                <Row className='my-3'>
+                  <Col>
+                    <XQuery query={ gql_request.items }>
+                      {
+                        (data, subscribe) =>
                         {
-                          (data, subscribe) =>
-                          {
-                            return <XTable data={ data } subscribe={ subscribe }/>;
-                          }
+                          return <XTable data={ data } subscribe={ subscribe }/>;
                         }
-                      </XQuery>
-                    </Col>
-                  </Row>
-                </Route>
-              </Switch>
-            </BrowserRouter>
-          </Container>
-        </Authorization.Provider>
-      </ApolloProvider>
+                      }
+                    </XQuery>
+                  </Col>
+                </Row>
+              </Container>
+            </Route>
+          </Switch>
+        </BrowserRouter>
+      </Authorization>
     ;
 
     return element;
@@ -153,4 +77,4 @@ class Application extends React.Component
 }
 
 
-export default withCookies(Application);
+export default Application;

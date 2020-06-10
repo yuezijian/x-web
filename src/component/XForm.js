@@ -4,6 +4,8 @@ import Col    from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import Form   from 'react-bootstrap/Form';
 
+import misc from '../misc';
+
 
 // function render_mutation(component, text)
 // {
@@ -31,20 +33,15 @@ import Form   from 'react-bootstrap/Form';
 
 
 
-function random_string()
-{
-  return (Math.random() + 0.1).toString(36).substring(2);
-}
-
 function XForm(props)
 {
-  const [text, SetText] = useState(random_string());
+  const [text, SetText] = useState(misc.random_string());
 
-  const callback = () =>
+  const submit = () =>
   {
     props.submit({ variables: { text } });
 
-    SetText(random_string());
+    SetText(misc.random_string());
   }
 
   const element =
@@ -55,7 +52,7 @@ function XForm(props)
           <Form.Control size='sm' value={ text } onChange={ (event) => SetText(event.target.value) }/>
         </Col>
         <Col>
-          <Button size='sm' onClick={ callback }>Add</Button>
+          <Button size='sm' onClick={ submit }>添加</Button>
         </Col>
       </Form.Row>
     </Form>
