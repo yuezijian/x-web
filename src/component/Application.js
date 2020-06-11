@@ -10,66 +10,63 @@ import
   BrowserRouter, Route, Switch
 } from 'react-router-dom';
 
+import { ApolloProvider  } from '@apollo/react-hooks';
+
 // import { Subscription } from '@apollo/react-components';
+
+import { CookiesProvider, withCookies } from 'react-cookie';
+
+import Context from './Context';
 
 import Authorization from './Authorization';
 
 import Navigation from './Navigation';
 
-import XMutation from './XMutation';
-import XQuery    from './XQuery';
+import client from '../client';
 
-import XForm  from './XForm';
-import XTable from './XTable';
-
-import gql_request from '../gql_request';
+import Example from './Example';
 
 
 class Application extends React.Component
 {
   render()
   {
+    const { cookies } = this.props;
+
     const element =
 
-      <Authorization>
-        <BrowserRouter>
-          <Switch>
-            <Route path='/' exact={ true }>
+      <CookiesProvider>
+        <Context.Provider value={ { cookies } }>
+          <ApolloProvider client={ client({ token: () => cookies.get('token') }) }>
+            <Authorization>
               <Container>
-                <Row className='my-3'>
-                  <Col>
-                    <Navigation/>
-                  </Col>
-                </Row>
-                <Row className='my-3'>
-                  <Col>
-                    <XMutation mutation={ gql_request.item_add }>
-                      {
-                        (submit) =>
-                        {
-                          return <XForm submit={ submit }/>;
-                        }
-                      }
-                    </XMutation>
-                  </Col>
-                </Row>
-                <Row className='my-3'>
-                  <Col>
-                    <XQuery query={ gql_request.items }>
-                      {
-                        (data, subscribe) =>
-                        {
-                          return <XTable data={ data } subscribe={ subscribe }/>;
-                        }
-                      }
-                    </XQuery>
-                  </Col>
-                </Row>
+                <BrowserRouter>
+                  <Row>
+                    <Col>
+                      <Navigation/>
+                    </Col>
+                  </Row>
+                  <Row className='my-2'>
+                    <Col>
+                      <Switch>
+                        <Route path='/' exact={ true }>
+                          <div/>
+                        </Route>
+                        <Route path='/example/subscription'>
+                          <Example.Subscription/>
+                        </Route>
+                        <Route path='/his3/order'>
+                          <div>his3/order</div>
+                        </Route>
+                      </Switch>
+                    </Col>
+                  </Row>
+                </BrowserRouter>
               </Container>
-            </Route>
-          </Switch>
-        </BrowserRouter>
-      </Authorization>
+            </Authorization>
+          </ApolloProvider>
+        </Context.Provider>
+      </CookiesProvider>
     ;
 
     return element;
@@ -77,4 +74,4 @@ class Application extends React.Component
 }
 
 
-export default Application;
+export default withCookies(Application);
