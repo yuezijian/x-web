@@ -4,7 +4,8 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 import link from './link';
 
 
-const host = '10.68.15.46';
+// const host = '10.68.15.46';
+const host = 'localhost';
 const port = 4000;
 
 

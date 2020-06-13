@@ -2,8 +2,16 @@ import React    from 'react';
 import ReactDOM from 'react-dom';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.min.js';
 
-import Application from './component/Application.js';
+import Application from './component/Application';
 
 
-ReactDOM.render(<Application/>, document.getElementById('root'));
+const element =
+
+  <React.StrictMode>
+    <Application/>
+  </React.StrictMode>
+;
+
+ReactDOM.render(element, document.getElementById('root'));

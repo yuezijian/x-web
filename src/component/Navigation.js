@@ -1,13 +1,78 @@
 import React from 'react';
 
-import Dropdown    from 'react-bootstrap/Dropdown';
-import Nav         from 'react-bootstrap/Nav';
-import Navbar      from 'react-bootstrap/Navbar';
-import NavDropdown from 'react-bootstrap/NavDropdown';
-
-import { LinkContainer } from 'react-router-bootstrap';
+import { Link } from 'react-router-dom';
 
 import Context from './Context';
+
+
+function Navbar(props)
+{
+  return <nav className='nav navbar-expand'>{ props.children }</nav>;
+}
+
+Navbar.Brand = function(props)
+{
+  return <div className='navbar-brand'>{ props.children }</div>;
+}
+
+Navbar.Collapse = function({ children, ...props })
+{
+  const element =
+
+    <div>
+      <
+        button
+        type          = 'button'
+        className     = 'navbar-toggler'
+        data-toggle   = 'collapse'
+        data-target   = '#content'
+        aria-controls = 'content'
+        aria-expanded = 'false'
+        aria-label    = 'Toggle navigation'
+      >
+        <span className='navbar-toggler-icon'/>
+      </button>
+      <div className="collapse navbar-collapse" id="content">
+      </div>
+    </div>
+  ;
+
+  return element;
+}
+
+Navbar.Dropdown = function({ id, title, children, ...props })
+{
+  const element =
+
+    <div>
+      <
+        div
+        id            = { id }
+        className     = 'nav-link dropdown-toggle'
+        role          = 'button'
+        data-toggle   = 'dropdown'
+        aria-haspopup = 'true'
+        aria-expanded = 'false'
+      >
+        {
+          title
+        }
+      </div>
+      <div className='dropdown-menu' aria-labelledby={ id }>
+        {
+          children
+        }
+      </div>
+    </div>
+  ;
+
+  return element;
+}
+
+Navbar.Link = function({ children, ...props})
+{
+  return <Link className='nav-link' { ...props }>{ children }</Link>;
+}
 
 
 class Navigation extends React.Component
@@ -17,34 +82,34 @@ class Navigation extends React.Component
     const element =
 
       <Navbar>
-        <Navbar.Brand>
-          X-Web
-        </Navbar.Brand>
-        <Navbar.Toggle aria-controls='navbar'/>
-        <Navbar.Collapse id='navbar'>
-          <LinkContainer to='/'><Nav.Link>首页</Nav.Link></LinkContainer>
-          <NavDropdown title="技术点" id="dropdown-technique">
-            <LinkContainer to='/example/subscription'><NavDropdown.Item>订阅</NavDropdown.Item></LinkContainer>
-          </NavDropdown>
-          <NavDropdown title="HIS-III" id="dropdown-his3">
-            <LinkContainer to='/his3/order'><NavDropdown.Item>医嘱</NavDropdown.Item></LinkContainer>
-          </NavDropdown>
-        </Navbar.Collapse>
-        <Dropdown alignRight={ true }>
-          <Dropdown.Toggle variant='outline-secondary' size='sm' id="dropdown-basic">
+
+        <Navbar.Brand>X-Web</Navbar.Brand>
+
+        <Navbar.Link to='/'>首页</Navbar.Link>
+
+        <Navbar.Dropdown id='technique' title='技术点'>
+          <Navbar.Link to='/example/subscription'>订阅</Navbar.Link>
+        </Navbar.Dropdown>
+
+        <Navbar.Dropdown id='x-platform' title='二次开发平台'>
+          <Navbar.Link to='/x-platform/data'>数据</Navbar.Link>
+        </Navbar.Dropdown>
+
+        <div className='dropdown ml-auto my-2'>
+          <button type='button' className='btn btn-outline-secondary btn-sm dropdown-toggle' data-toggle='dropdown'>
             用户
-          </Dropdown.Toggle>
-          <Dropdown.Menu>
+          </button>
+          <div className='dropdown-menu'>
             <Context.Consumer>
               {
                 ({ cookies }) =>
                 {
-                  return <Dropdown.Item as='button' onClick={ () => cookies.remove('token') }>注销</Dropdown.Item>
+                  return <button type='button' className='dropdown-item' onClick={ () => cookies.remove('token') }>注销</button>
                 }
               }
             </Context.Consumer>
-          </Dropdown.Menu>
-        </Dropdown>
+          </div>
+        </div>
       </Navbar>
     ;
 

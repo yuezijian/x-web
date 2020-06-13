@@ -1,8 +1,5 @@
 import React from 'react';
 
-import Button from 'react-bootstrap/Button';
-import Table  from 'react-bootstrap/Table';
-
 import XMutation from './XMutation';
 
 import gql_request from '../gql_request';
@@ -52,13 +49,13 @@ function ItemUpdate(props)
         {
           const button =
             <
-              Button
-              variant = 'warning'
-              size    = 'sm'
-              onClick = { () => submit({ variables: { id: props.item.id, name: misc.random_string() } }) }
+              button
+              type      = 'button'
+              className = 'btn btn-warning'
+              onClick   = { () => submit({ variables: { id: props.item.id, name: misc.random_string() } }) }
             >
               更新
-            </Button>
+            </button>
           ;
 
           return button;
@@ -80,13 +77,13 @@ function ItemRemove(props)
         {
           const button =
             <
-              Button
-              variant = 'danger'
-              size    = 'sm'
-              onClick = { () => submit({ variables: { id: props.item.id } }) }
+              button
+              type      = 'button'
+              className = 'btn btn-danger'
+              onClick   = { () => submit({ variables: { id: props.item.id } }) }
             >
               移除
-            </Button>
+            </button>
           ;
 
           return button;
@@ -127,7 +124,7 @@ class XTable extends React.Component
 
     const element =
 
-      <Table>
+      <table className='table table-sm'>
         <thead>
         <tr>
           <th>索引</th>
@@ -141,7 +138,7 @@ class XTable extends React.Component
           this.props.data.items.map(row)
         }
         </tbody>
-      </Table>
+      </table>
     ;
 
     return element;

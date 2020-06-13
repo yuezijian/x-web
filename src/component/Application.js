@@ -1,18 +1,8 @@
 import React from 'react';
 
-import Container from 'react-bootstrap/Container';
-
-import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
-
-import
-{
-  BrowserRouter, Route, Switch
-} from 'react-router-dom';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 import { ApolloProvider  } from '@apollo/react-hooks';
-
-// import { Subscription } from '@apollo/react-components';
 
 import { CookiesProvider, withCookies } from 'react-cookie';
 
@@ -39,15 +29,15 @@ class Application extends React.Component
         <Context.Provider value={ { cookies } }>
           <ApolloProvider client={ client({ token: () => cookies.get('token') }) }>
             <Authorization>
-              <Container>
+              <div className='container-fluid'>
                 <BrowserRouter>
-                  <Row>
-                    <Col>
+                  <div className='row'>
+                    <div className='col'>
                       <Navigation/>
-                    </Col>
-                  </Row>
-                  <Row className='my-2'>
-                    <Col>
+                    </div>
+                  </div>
+                  <div className='row my-2'>
+                    <div className='col'>
                       <Switch>
                         <Route path='/' exact={ true }>
                           <div/>
@@ -55,14 +45,14 @@ class Application extends React.Component
                         <Route path='/example/subscription'>
                           <Example.Subscription/>
                         </Route>
-                        <Route path='/his3/order'>
-                          <div>his3/order</div>
+                        <Route path='/x-platform'>
+                          <div>Incoming</div>
                         </Route>
                       </Switch>
-                    </Col>
-                  </Row>
+                    </div>
+                  </div>
                 </BrowserRouter>
-              </Container>
+              </div>
             </Authorization>
           </ApolloProvider>
         </Context.Provider>

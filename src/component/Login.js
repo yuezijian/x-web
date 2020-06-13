@@ -1,9 +1,5 @@
 import React from 'react';
 
-import Button from 'react-bootstrap/Button';
-import Card   from 'react-bootstrap/Card';
-import Form   from 'react-bootstrap/Form';
-
 import request from 'request';
 
 import Context from './Context';
@@ -15,17 +11,17 @@ class Login extends React.Component
   {
     const element =
 
-      <Card>
-        <Card.Header>请登录</Card.Header>
-        <Card.Body>
-          <Form>
-            <Form.Group>
-              <Form.Control placeholder='用户名'/>
-            </Form.Group>
-            <Form.Group>
-              <Form.Control type='password' placeholder='密码'/>
-            </Form.Group>
-          </Form>
+      <div className='card'>
+        <div className='card-header'>请登录</div>
+        <div className='card-body'>
+          <form>
+            <div className='form-group'>
+              <input type='text' className='form-control' placeholder='用户名'/>
+            </div>
+            <div className='form-group'>
+              <input type='password' className='form-control' placeholder='密码'/>
+            </div>
+          </form>
           <Context.Consumer>
             {
               ({ cookies }) =>
@@ -47,12 +43,12 @@ class Login extends React.Component
                   console.log(error);
                 };
 
-                return <Button onClick={ () => this._submit({ resolve, reject }) }>登录</Button>;
+                return <button type='button' className='btn btn-primary' onClick={ () => this._submit({ resolve, reject }) }>登录</button>;
               }
             }
           </Context.Consumer>
-        </Card.Body>
-      </Card>
+        </div>
+      </div>
     ;
 
     return element;

@@ -1,9 +1,5 @@
 import React, { useState } from "react";
 
-import Col    from 'react-bootstrap/Col';
-import Button from 'react-bootstrap/Button';
-import Form   from 'react-bootstrap/Form';
-
 import misc from '../misc';
 
 
@@ -46,16 +42,16 @@ function XForm(props)
 
   const element =
 
-    <Form>
-      <Form.Row>
-        <Col>
-          <Form.Control size='sm' value={ text } onChange={ (event) => SetText(event.target.value) }/>
-        </Col>
-        <Col>
-          <Button size='sm' onClick={ submit }>添加</Button>
-        </Col>
-      </Form.Row>
-    </Form>
+    <form className='form-inline'>
+      <
+        input
+        type      = 'text'
+        className = 'form-control form-control-sm'
+        value     = { text }
+        onChange  = { (event) => SetText(event.target.value) }
+      />
+      <button type='button' className='btn btn-primary btn-sm mx-1' onClick={ submit }>添加</button>
+    </form>
   ;
 
   return element;

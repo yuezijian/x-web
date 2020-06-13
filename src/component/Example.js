@@ -1,10 +1,5 @@
 import React from 'react';
 
-import Container from 'react-bootstrap/Container';
-
-import Col from 'react-bootstrap/Col';
-import Row from 'react-bootstrap/Row';
-
 import XMutation from './XMutation';
 import XQuery    from './XQuery';
 
@@ -18,9 +13,9 @@ function Subscription()
 {
   const element =
 
-    <Container>
-      <Row>
-        <Col>
+    <div>
+      <div className='row'>
+        <div className='col'>
           <XMutation mutation={ gql_request.item_add }>
             {
               (submit) =>
@@ -29,10 +24,10 @@ function Subscription()
               }
             }
           </XMutation>
-        </Col>
-      </Row>
-      <Row className='my-3'>
-        <Col>
+        </div>
+      </div>
+      <div className='row my-2'>
+        <div className='col'>
           <XQuery query={ gql_request.items }>
             {
               (data, subscribe) =>
@@ -41,9 +36,9 @@ function Subscription()
               }
             }
           </XQuery>
-        </Col>
-      </Row>
-    </Container>
+        </div>
+      </div>
+    </div>
   ;
 
   return element;
