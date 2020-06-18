@@ -7,8 +7,10 @@ import Context from './Context';
 import Login from './Login';
 
 
-function Authorization({ cookies, children, ...props })
+function Authorization({ enable, cookies, children, ...props })
 {
+  if (!enable) return children;
+
   const redirect = (from) => <Redirect to={ { pathname: '/login', state: { from } } }/>;
 
   const element =

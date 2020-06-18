@@ -15,6 +15,7 @@ import Navigation from './Navigation';
 import client from '../client';
 
 import Example from './Example';
+import View from './View';
 
 
 class Application extends React.Component
@@ -28,7 +29,7 @@ class Application extends React.Component
       <CookiesProvider>
         <Context.Provider value={ { cookies } }>
           <ApolloProvider client={ client({ token: () => cookies.get('token') }) }>
-            <Authorization>
+            <Authorization enable={ false }>
               <div className='container-fluid'>
                 <BrowserRouter>
                   <div className='row'>
@@ -40,13 +41,13 @@ class Application extends React.Component
                     <div className='col'>
                       <Switch>
                         <Route path='/' exact={ true }>
-                          <div/>
+                          <View/>
                         </Route>
                         <Route path='/example/subscription'>
                           <Example.Subscription/>
                         </Route>
                         <Route path='/x-platform'>
-                          <div>Incoming</div>
+                          Incoming
                         </Route>
                       </Switch>
                     </div>
