@@ -1,8 +1,13 @@
 import React from 'react'
 
+import * as d3 from 'd3';
+
 import D3SVG from './D3SVG';
 
 import XQuery from './XQuery';
+
+import option from './x-data/option';
+import svg    from './x-data/svg';
 
 
 const q =
@@ -11,23 +16,23 @@ const q =
   {
     projects
     {
-      id
+      index
       name
 
       namespaces
       {
-        id
+        index
         name
 
         objects
         {
-          id
+          index
           name
           note
 
           properties
           {
-            id
+            index
             name
             type
             note
@@ -39,84 +44,6 @@ const q =
   `
 ;
 
-
-const svg =
-  {
-    text:
-      {
-        text_anchor:
-          {
-            start:  'start',
-            middle: 'middle',
-            end:    'end'
-          },
-
-        dominant_baseline:
-          {
-            auto:         'auto',
-            text_bottom:  'text-bottom',
-            alphabetic:   'alphabetic',
-            ideographic:  'ideographic',
-            middle:       'middle',
-            central:      'central',
-            mathematical: 'mathematical',
-            hanging:      'hanging',
-            text_top:     'text-top'
-          }
-      }
-  };
-
-const option =
-  {
-    font:
-      {
-        height: 12,
-
-        color: '#ffffff'
-      },
-
-    table:
-      {
-        label:
-          {
-            color: '#000000',
-
-            margin: 8,
-
-            font:
-              {
-                height: 18,
-
-                color: '#d5d5d5'
-              },
-
-            width: 280
-          },
-
-        cell:
-          {
-            color: '#323232',
-
-            margin: 4
-          },
-
-        column:
-        [
-          { width: 140 },
-          { width: 100 },
-          { width: 300 }
-        ],
-
-        spacing: 10
-      }
-  };
-
-option.table.width = option.table.column.reduce((a, c) => a + c.width, 0) + option.table.column.length - 1;
-
-option.table.label.height = option.table.label.font.height + option.table.label.margin * 2;
-
-option.table.cell.dy     = option.font.height + option.table.cell.margin * 2 + 1;
-option.table.cell.height = option.font.height + option.table.cell.margin * 2;
 
 
 const my_scene = {};
@@ -136,7 +63,7 @@ function init(data)
 
       for (const object of namespace.objects)
       {
-        object.expand = true;
+        object.expand = false;
       }
     }
   }
@@ -184,185 +111,181 @@ function layout(data)
   }
 }
 
-function draw_object_label(g)
+
+let expand = false;
+
+
+
+function draw_row(node, data, transition, callback)
 {
-  g.append('rect')
+  const cell =
+    {
+      enter(selection)
+      {
+        const g = selection.append('g')
+          .attr('transform', `translate( 0 ${ -option.table.cell.height } )`)
+          .call(s => s.transition(transition).attr('transform', (d, i) => `translate( 0 ${ i * option.table.cell.dy + 1 } )`))
+        ;
+
+        g.append('rect')
+          .attr('x', option.table.column[0].x)
+          .attr('y', 0)
+          .attr('width', option.table.column[0].width)
+          .attr('height', option.table.cell.height)
+          .attr('fill', option.table.cell.color)
+        ;
+
+        g.append('text')
+          .text(d => d.name)
+          .attr('x', option.table.column[0].x + option.table.cell.margin)
+          .attr('y', (d, i) => option.table.cell.margin + 1)
+          .attr('font-size', option.font.height)
+          .attr('text-anchor', svg.text.text_anchor.start)
+          .attr('dominant-baseline', svg.text.dominant_baseline.hanging)
+          .attr('fill', option.font.color)
+        ;
+
+        g.append('rect')
+          .attr('x', option.table.column[1].x)
+          .attr('y', 0)
+          .attr('width', option.table.column[1].width)
+          .attr('height', option.table.cell.height)
+          .attr('fill', option.table.cell.color)
+        ;
+
+        g.append('text')
+          .text(d => d.type)
+          .attr('x', option.table.column[1].x + option.table.cell.margin)
+          .attr('y', (d, i) => option.table.cell.margin + 1)
+          .attr('font-size', option.font.height)
+          .attr('text-anchor', svg.text.text_anchor.start)
+          .attr('dominant-baseline', svg.text.dominant_baseline.hanging)
+          .attr('fill', option.font.color)
+        ;
+
+        g.append('rect')
+          .attr('x', option.table.column[2].x)
+          .attr('y', 0)
+          .attr('width', option.table.column[2].width)
+          .attr('height', option.table.cell.height)
+          .attr('fill', option.table.cell.color)
+        ;
+
+        g.append('text')
+          .text(d => d.note)
+          .attr('x', option.table.column[2].x + option.table.cell.margin)
+          .attr('y', (d, i) => option.table.cell.margin + 1)
+          .attr('font-size', option.font.height)
+          .attr('text-anchor', svg.text.text_anchor.start)
+          .attr('dominant-baseline', svg.text.dominant_baseline.hanging)
+          .attr('fill', option.font.color)
+        ;
+      },
+
+      update(selection)
+      {
+      },
+
+      exit(selection)
+      {
+        const logic = s => s.transition(transition)
+          .attr('transform', `translate( 0 ${ -option.table.cell.height } )`)
+          .remove()
+          .end()
+          .then(() => callback ? callback() : null)
+        ;
+
+        selection.call(logic);
+      }
+    };
+
+  node.selectAll('g').data(data, d => d.index).join(cell.enter, cell.update, cell.exit);
+}
+
+function label_setup(node)
+{
+  ;
+}
+
+function my_draw(node, data, size)
+{
+  const transition = node.transition();//.duration(200);
+
+  const g_body  = node.append('g').attr('transform', `translate( 0 ${ option.table.label.height } )`);
+  const g_label = node.append('g');
+
+  // 这些是不需要 data join 的部分
+
+  g_label.append('rect')
     .attr('x', 0)
     .attr('y', 0)
-    .attr('width', d => d.expand ? option.table.width : option.table.label.width)
+    .attr('width', expand ? option.table.width : option.table.label.width)
     .attr('height', option.table.label.height)
     .attr('fill', option.table.label.color)
-    // .on('click', d => { d.expand = !d.expand; my_draw(my_scene.root, my_scene.data, my_scene.size); })
+    .on('click',
+      function()
+      {
+        expand = !expand;
+
+        if (expand)
+        {
+          const logic = s => s.transition(transition)
+            .attr('width', expand ? option.table.width : option.table.label.width)
+            .end()
+            .then(() => draw_row(g_body, expand ? data : [], transition))
+          ;
+
+          d3.select(this).call(logic);
+        }
+        else
+        {
+          const logic = s => s.transition(transition)
+            .attr('width', expand ? option.table.width : option.table.label.width)
+          ;
+
+          draw_row(g_body, expand ? data : [], transition, () => d3.select(this).call(logic));
+        }
+      }
+    )
   ;
 
-  g.append('text')
-    .text(d => `${ d.name } [${ d.note }]`)
+  g_label.append('text')
+    // .text(d => `${ d.name } [${ d.note }]`)
+    .text('TableName 表名称')
     .attr('x', option.table.label.margin)
-    .attr('y', option.table.label.margin)
+    .attr('y', option.table.label.margin + 1)
     .attr('font-size', option.table.label.font.height)
     .attr('text-anchor', svg.text.text_anchor.start)
     .attr('dominant-baseline', svg.text.dominant_baseline.hanging)
     .attr('fill', option.table.label.font.color)
   ;
-}
 
-function object_property_enter(g, key, x, width)
-{
-  g.append('rect')
-    .attr('x', x)
-    .attr('y', (d, i) => i * option.table.cell.dy + option.table.label.height + 1)
-    .attr('width', width)
-    .attr('height', option.table.cell.height)
-    .attr('fill', option.table.cell.color)
-  ;
+  // 这是需要 data join 的部分
 
-  g.append('text')
-    .text(d => d[key])
-    .attr('x', x + option.table.cell.margin)
-    .attr('y', (d, i) => i * option.table.cell.dy + option.table.cell.margin + option.table.label.height + 2)
-    .attr('font-size', option.font.height)
-    .attr('text-anchor', svg.text.text_anchor.start)
-    .attr('dominant-baseline', svg.text.dominant_baseline.hanging)
-    .attr('fill', option.font.color)
-  ;
-}
-
-
-function my_draw(root, data, size)
-{
-  layout(data);
-
-  console.log(data)
-
-  root.attr('transform', 'translate( 0 0 )');
-
-  const g_project = root.append('g')
-    .selectAll('g')
-    .data(data.projects, d => d.id)
-    .enter()
-    .append('g')
-  ;
-
-  const g_namespace = g_project.selectAll('g')
-    .data(d => d.namespaces, d => d.id)
-    .enter()
-    .append('g')
-  ;
-
-  g_namespace.append('text')
-    .text(d => d.name)
-    .attr('x', d => d.x)
-    .attr('y', d => d.y)
-    .attr('font-size', 30)
-    .attr('text-anchor', svg.text.text_anchor.middle)
-    .attr('dominant-baseline', svg.text.dominant_baseline.hanging)
-    .attr('fill', '#ff0000')
-  // .each(d => console.log(d))
-  ;
-
-  const g_object = g_namespace.selectAll('g')
-    .data(d => d.objects, d => d.id)
-    .enter()
-    .append('g')
-    .attr('transform', d => `translate( ${ d.x } ${ d.y } )`)
-    // .attr('transform', d => console.log(d))
-    .append('rect')
-    .attr('x', 0)
-    .attr('y', 0)
-    .attr('width', 100)
-    .attr('height', 100)
-  ;
-
-  // draw_object_label(g_object);
-
-  return;
-
-  const g_property_update = g_object.selectAll('g').data(d => d.properties, d => d.id);
-  const g_property_enter  = g_property_update.enter().append('g');
-  const g_property_exit   = g_property_update.exit();
-
-  const g_property_all = g_property_update.merge(g_property_enter);
-
-  object_property_enter(g_property_enter, 'name', 0, 140);
-  // object_property_enter(g_property_enter, 'type', 141, 100);
-  // object_property_enter(g_property_enter, 'note', 242, 300);
-
-  g_property_exit.remove();
-
-  // const rt = d3.hierarchy(database, (d) => d.tables);
-  //
-  // const tree = d3.tree()
-  //   .size([300, 200])
-  //   .nodeSize([30, 30])
-  //   // .separation((a, b) => a.data.properties.length < b.data.properties.length ? a.data.properties.length : b.data.properties.length)
-  //   .separation((a, b) => b.data.properties.length * 0.9)
-  // ;
-  //
-  // tree(rt);
-  //
-  // const nodes = rt.descendants();
-  // const links = rt.links();
-  //
-  // nodes.splice(0, 1);
-  //
-  // const gtb = root.append('g').selectAll('g')
-  //   .data(nodes, d => d.data.id)
-  //   .enter()
-  // ;
-  //
-  // root.append('g')
-  //   .attr('fill', 'none')
-  //   .attr('stroke', '#555')
-  //   .attr('stroke-width', 1.5)
-  //   .selectAll('path')
-  //   .data(links)
-  //   .join('path')
-  //   .attr('d', d3.linkHorizontal()
-  //     .x(d => d.y)
-  //     .y(d => d.x))
-  // ;
-  //
-  // const gg = gtb.append('g')
-  //   .attr('transform', d => `translate( ${ d.y + 20 }, ${ d.x } )`)
-  // ;
-  //
-  // gg.append('text')
-  //   .text(d => d.data.name)
-  //   .attr('font-size', option.font.height)
-  //   // .attr('text-anchor', 'middle')
-  //   .attr('dominant-baseline', 'middle')
-  // //   .attr('x', 20 + margin.x)
-  // //   .attr('y', (d, i) => 20 + i * (font.height + margin.y * 2 ))
-  // //   .attr('fill', '#ffffff')
-  // ;
+  draw_row(g_body, expand ? data : [], transition);
 }
 
 my_scene.setup = function(root, data, size)
 {
-  this.root = root;
-  this.data = data;
-  this.size = size;
-
   // 首先根据自带状态生成绘制数据
 
-  my_draw(root, data, size);
+  my_draw(root.append('g'), data, size);
 };
 
 
 function View()
 {
+  const data =
+    [
+      { index: 0, name: 'this', type: 'type', note: 'note' },
+      { index: 1, name: 'is a', type: 'type', note: 'note' },
+      { index: 2, name: 'draw', type: 'type', note: 'note' },
+      { index: 3, name: 'test', type: 'type', note: 'note' }
+    ];
+
   const element =
 
-    <XQuery query={ q }>
-      {
-        (data) =>
-        {
-          init(data);
-
-          return <D3SVG width={ 50000 } height={ 1200 } scene={ my_scene } data={ data }/>
-        }
-      }
-    </XQuery>
+    <D3SVG width={ 1200 } height={ 800 } scene={ my_scene } data={ data }/>
   ;
 
   return element;
