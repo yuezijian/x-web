@@ -9,7 +9,7 @@ const option =
 
     table:
       {
-        label:
+        head:
           {
             color: '#000000',
 
@@ -22,7 +22,7 @@ const option =
                 color: '#d5d5d5'
               },
 
-            width: 280
+            width: 70
           },
 
         cell:
@@ -34,9 +34,9 @@ const option =
 
         column:
           [
-            { width: 140 },
-            { width: 100 },
-            { width: 300 }
+            { width: 50 },
+            { width: 50 },
+            { width: 50 }
           ],
 
         spacing: 10
@@ -45,7 +45,7 @@ const option =
 
 option.table.width = option.table.column.reduce((a, c) => a + c.width, 0) + option.table.column.length - 1;
 
-option.table.label.height = option.table.label.font.height + option.table.label.margin * 2;
+option.table.head.height = option.table.head.font.height + option.table.head.margin * 2;
 
 option.table.cell.dy     = option.font.height + option.table.cell.margin * 2 + 1;
 option.table.cell.height = option.font.height + option.table.cell.margin * 2;
