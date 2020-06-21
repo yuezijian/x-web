@@ -76,15 +76,18 @@ class table
             .attr('dominant-baseline', svg.text.dominant_baseline.hanging)
             .attr('fill', option.font.color)
           ;
+
+          return g;
         },
 
         update(selection)
         {
+          return selection;
         },
 
         exit(selection)
         {
-          selection.remove();
+          return selection.remove();
 
           // const logic = s => s.transition(transition)
           //   .attr('transform', `translate( 0 ${ -option.table.cell.height } )`)
@@ -114,11 +117,6 @@ class table
       .data(d => d.expand ? d.properties : [], d => d.index)
       .join(this.join.enter, this.join.update, this.join.exit)
     ;
-
-    if (this.callback)
-    {
-      this.callback();
-    }
   }
 
   _setup()
@@ -131,8 +129,19 @@ class table
       .attr('width', d => d.expand ? option.table.width : option.table.head.width)
       .attr('height', option.table.head.height)
       .attr('fill', option.table.head.color)
-      // .on('click', function(d) { _this._click(d, this, _this); })
-      .on('click', d => { d.expand = !d.expand; this.update(); })
+      .on('click',
+          d =>
+          {
+            d.expand = !d.expand;
+
+            if (this.callback)
+            {
+              this.callback();
+            }
+
+            this.update();
+          }
+      )
     ;
 
     this.head.append('text')
