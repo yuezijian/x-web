@@ -15,7 +15,10 @@ import Navigation from './Navigation';
 import client from '../client';
 
 import Example from './Example';
+
 import View from './View';
+
+import ORM from './x-data/ORM';
 
 
 class Application extends React.Component
@@ -46,8 +49,8 @@ class Application extends React.Component
                         <Route path='/example/subscription'>
                           <Example.Subscription/>
                         </Route>
-                        <Route path='/x-platform'>
-                          Incoming
+                        <Route path='/x-data/orm'>
+                          <ORM/>
                         </Route>
                       </Switch>
                     </div>

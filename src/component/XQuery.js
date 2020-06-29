@@ -2,34 +2,31 @@ import React from 'react';
 
 import { gql } from 'apollo-boost';
 
-import { Query } from '@apollo/react-components';
+import { useQuery } from '@apollo/react-hooks';
+
+import Spinner from './control/Spinner';
 
 
 function XQuery(props)
 {
-  const element =
+  const option =
+    {
+      fetchPolicy: 'network-only'
+    };
 
-    <Query query={ gql(props.query) }>
-      {
-        ({ loading, error, data, networkStatus, subscribeToMore }) =>
-        {
-          if (loading)
-          {
-            return <div className='spinner-border' role='status'/>;
-          }
+  const { loading, error, data, subscribeToMore } = useQuery(gql(props.query), option);
 
-          if (error)
-          {
-            return <p>{ error.toString() }</p>;
-          }
+  if (loading)
+  {
+    return <Spinner/>;
+  }
 
-          return props.children(data, subscribeToMore);
-        }
-      }
-    </Query>
-  ;
+  if (error)
+  {
+    return <p>{ error.toString() }</p>;
+  }
 
-  return element;
+  return props.children(data, subscribeToMore);
 }
 
 

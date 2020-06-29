@@ -34,7 +34,7 @@ const pj1 =
     objects:
       [
         { index: 0, name: 't1', properties: t1, expand: false },
-        { index: 1, name: 't2', properties: t2, expand: false },
+        { index: 1, name: 't2', properties: t2, expand: true },
         { index: 2, name: 't3', properties: t3, expand: false }
       ],
 

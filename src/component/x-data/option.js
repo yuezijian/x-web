@@ -22,7 +22,7 @@ const option =
                 color: '#d5d5d5'
               },
 
-            width: 70
+            width: 120
           },
 
         cell:
@@ -34,9 +34,9 @@ const option =
 
         column:
           [
-            { width: 50 },
-            { width: 50 },
-            { width: 50 }
+            { width: 120 },
+            { width: 100 },
+            { width: 200 }
           ],
 
         spacing: 10

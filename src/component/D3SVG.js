@@ -10,15 +10,6 @@ class D3SVG extends React.Component
     super(props);
 
     this.id = this.props.id ? this.props.id : `id-${ Math.random().toString(36).slice(2) }`;
-
-    const width  = this.props.width  ? this.props.width  : 200;
-    const height = this.props.height ? this.props.height : 200;
-
-    this.state =
-      {
-        width,
-        height
-      };
   }
 
   componentDidMount()
@@ -26,20 +17,14 @@ class D3SVG extends React.Component
     const svg = d3.select(`#${ this.id }`);
 
     svg.append('rect')
-      .attr('width', this.state.width)
-      .attr('height', this.state.height)
+      .attr('width', '100%')
+      .attr('height', '100%')
       .attr('fill', '#c9c9c9')
     ;
 
     const root = svg.append('g').attr('id', 'root');
 
-    const size =
-      {
-        width:  this.state.width,
-        height: this.state.height
-      };
-
-    this.props.scene.setup(root, this.props.data, size);
+    this.props.scene.setup(svg, root, this.props.data);
   }
 
   render()
@@ -47,12 +32,7 @@ class D3SVG extends React.Component
     const element =
 
       <div>
-        <
-          svg
-          id     = { this.id           }
-          width  = { this.state.width  }
-          height = { this.state.height }
-        />
+        <svg id={ this.id } width='100%' height='800'/>
       </div>
     ;
 

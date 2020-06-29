@@ -8,6 +8,8 @@ import subscribe_option from '../subscribe_option';
 
 import misc from '../misc';
 
+import Table from './control/Table';
+
 
 function op_add(previous, data)
 {
@@ -123,22 +125,11 @@ class XTable extends React.Component
     }
 
     const element =
-
-      <table className='table table-sm'>
-        <thead>
-        <tr>
-          <th>索引</th>
-          <th>名称</th>
-          <th/>
-          <th/>
-        </tr>
-        </thead>
-        <tbody>
-        {
-          this.props.data.items.map(row)
-        }
-        </tbody>
-      </table>
+      <
+        Table
+        head = { ['索引', '名称', '', ''] }
+        body = { () => this.props.data.items.map(row) }
+      />
     ;
 
     return element;

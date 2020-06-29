@@ -101,17 +101,21 @@ class table
       };
 
     this.label = null;
+    this.mask  = null;
 
     this.callback = callback;
 
     this.transition = transition;
 
     this._setup();
+
+    this.update();
   }
 
   update()
   {
     this.label.attr('width', d => d.expand ? option.table.width : option.table.head.width);
+    this.mask.attr('width', d => d.expand ? option.table.width : option.table.head.width);
 
     this.body.selectAll('g')
       .data(d => d.expand ? d.properties : [], d => d.index)
@@ -129,24 +133,10 @@ class table
       .attr('width', d => d.expand ? option.table.width : option.table.head.width)
       .attr('height', option.table.head.height)
       .attr('fill', option.table.head.color)
-      .on('click',
-          d =>
-          {
-            d.expand = !d.expand;
-
-            if (this.callback)
-            {
-              this.callback();
-            }
-
-            this.update();
-          }
-      )
     ;
 
     this.head.append('text')
-      .text(d => `${ d.name }`)
-      // .text(d => `${ d.name } [${ d.note }]`)
+      .text(d => `${ d.name } [${ d.note }]`)
       .attr('x', option.table.head.margin)
       .attr('y', option.table.head.margin + 1)
       .attr('font-size', option.table.head.font.height)
@@ -155,7 +145,26 @@ class table
       .attr('fill', option.table.head.font.color)
     ;
 
-    // this.update();
+    this.mask = this.head.append('rect')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('width', d => d.expand ? option.table.width : option.table.head.width)
+      .attr('height', option.table.head.height)
+      .attr('fill', 'transparent')
+      .on('click',
+        d =>
+        {
+          d.expand = !d.expand;
+
+          if (this.callback)
+          {
+            this.callback();
+          }
+
+          this.update();
+        }
+      )
+    ;
   }
 
   _click(d, n, c)

@@ -9,9 +9,9 @@ import Application from './component/Application';
 
 const element =
 
-  <React.StrictMode>
-    <Application/>
-  </React.StrictMode>
+  <Application/>
+  // <React.StrictMode>
+  // </React.StrictMode>
 ;
 
 ReactDOM.render(element, document.getElementById('root'));
