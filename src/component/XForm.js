@@ -35,7 +35,7 @@ function XForm(props)
 
   const submit = () =>
   {
-    props.submit({ variables: { text } });
+    props.submit({ text });
 
     SetText(misc.random_string());
   }

@@ -16,7 +16,7 @@ function Subscription()
     <div>
       <div className='row'>
         <div className='col'>
-          <XMutation mutation={ gql_request.item_add }>
+          <XMutation request={ { mutation: gql_request.item_add } }>
             {
               (submit) =>
               {
@@ -28,7 +28,7 @@ function Subscription()
       </div>
       <div className='row my-2'>
         <div className='col'>
-          <XQuery query={ gql_request.items }>
+          <XQuery request={ { query: gql_request.items } }>
             {
               (data, subscribe) =>
               {

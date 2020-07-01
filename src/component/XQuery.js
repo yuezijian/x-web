@@ -7,14 +7,14 @@ import { useQuery } from '@apollo/react-hooks';
 import Spinner from './control/Spinner';
 
 
-function XQuery(props)
+function XQuery({ request, children })
 {
   const option =
     {
       fetchPolicy: 'network-only'
     };
 
-  const { loading, error, data, subscribeToMore } = useQuery(gql(props.query), option);
+  const { loading, error, data, subscribeToMore } = useQuery(gql(request.query), option);
 
   if (loading)
   {
@@ -26,7 +26,7 @@ function XQuery(props)
     return <p>{ error.toString() }</p>;
   }
 
-  return props.children(data, subscribeToMore);
+  return children(data, subscribeToMore);
 }
 
 

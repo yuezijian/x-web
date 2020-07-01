@@ -25,21 +25,22 @@ class Navigation extends React.Component
           <Navbar.Link to='/x-data/orm'>ORM</Navbar.Link>
         </Navbar.Dropdown>
 
-        <div className='dropdown ml-auto my-2'>
-          <button type='button' className='btn btn-outline-secondary btn-sm dropdown-toggle' data-toggle='dropdown'>
-            用户
-          </button>
-          <div className='dropdown-menu'>
-            <Context.Consumer>
-              {
-                ({ cookies }) =>
-                {
-                  return <button type='button' className='dropdown-item' onClick={ () => cookies.remove('token') }>注销</button>
-                }
-              }
-            </Context.Consumer>
-          </div>
-        </div>
+        {/*<div className='dropdown ml-auto my-2'>*/}
+        {/*  <button type='button' className='btn btn-outline-secondary btn-sm dropdown-toggle' data-toggle='dropdown'>*/}
+        {/*    用户*/}
+        {/*  </button>*/}
+        {/*  <div className='dropdown-menu'>*/}
+        {/*    <Context.Consumer>*/}
+        {/*      {*/}
+        {/*        ({ cookies }) =>*/}
+        {/*        {*/}
+        {/*          return <button type='button' className='dropdown-item' onClick={ () => cookies.remove('token') }>注销</button>*/}
+        {/*        }*/}
+        {/*      }*/}
+        {/*    </Context.Consumer>*/}
+        {/*  </div>*/}
+        {/*</div>*/}
+
       </Navbar>
     ;
 

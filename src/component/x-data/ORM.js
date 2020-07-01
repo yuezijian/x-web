@@ -1,68 +1,166 @@
 import React, { useState } from 'react';
 
 import Button from '../control/Button';
+import Form   from '../control/Form';
+import List   from '../control/List';
 import Table  from '../control/Table';
 
+import XMutation from '../XMutation';
 import XQuery from '../XQuery';
 
 
-// <div>
-//   <div className='row'>
-//     <div className='col'>
-//       <Button>新增属性</Button>
-//       <Button>保存</Button>
-//     </div>
-//   </div>
-//   <div className='row mt-2'>
-//     <div className='col'>
-//       <Table.Auto data={ properties } hover/>
-//     </div>
-//   </div>
-// </div>
+const request =
+  {
+    query:
+      `
+        query
+        {
+          orm
+          {
+            name
+            note
+
+            properties
+            {
+              name
+              type
+              not_null
+              default_value
+              note
+            }
+          }
+        }
+      `,
+
+    mutation:
+      `
+        mutation($name: String!)
+        {
+          object_add(name: $name)
+          {
+            success
+            message
+            object
+            {
+              name
+              note
+
+              properties
+              {
+                name
+                type
+                not_null
+                default_value
+                note
+              }
+            }
+          }
+        }
+      `
+  };
+
 
 function View(props)
 {
+  const [ object_name, SetObjectName ] = useState('');
+
   const [ properties, SetProperties ] = useState([]);
 
-  const [ i_object,  SetIndexObject  ] = useState(-1);
+  const [ id,  SetID  ] = useState(-1);
 
   const item_object = (object, index) =>
   {
-    console.log(object)
-    const active = i_object === object.index ? ' active' : '';
+    const click = () =>
+    {
+      SetProperties(object.properties);
 
-    const style = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center' + active;
+      SetID(object.id);
+    };
 
-    const button =
+    const item =
 
-      <
-        button
-        className = { style }
-        type      = 'button'
-        key       = { index }
-        onClick   = { () => { SetProperties(object.properties); SetIndexObject(object.index); } }
-      >
-        { object.name }
-      </button>
+      <List.Item key={ index } active={ id === object.id } click={ click }>
+        {
+          object.name
+        }
+      </List.Item>
     ;
 
-    return button;
+    return item;
+  };
+
+  const filter = ['name', 'type', 'not_null', 'default_value', 'note'];
+
+  const update_object = (current, data) =>
+  {
+    const orm = current.orm.concat([data.object_add.object]);
+
+    console.log(data.object_add.object);
+
+    console.log(orm);
+
+    return { orm };
   };
 
   const element =
 
     <div className='row'>
-      <div className='col-2'>
-        <div className='list-group'>
-          {
-            // props.objects.map(item_object)
-          }
+      <div className='col-3'>
+
+        <div className='row'>
+          <div className='col'>
+            <Form inline>
+              <
+                Form.Control.Input
+                value       = { object_name }
+                on_change   = { event => SetObjectName(event.target.value) }
+                placeholder = '名称'
+              />
+              <XMutation request={ request } update={ update_object }>
+                {
+                  (submit) =>
+                  {
+                    return <Button click={ () => submit({ name: object_name }) }>新增</Button>;
+                  }
+                }
+              </XMutation>
+            </Form>
+          </div>
+        </div>
+        <div className='row mt-2'>
+          <div className='col'>
+            <List>
+              {
+                props.objects.map(item_object)
+              }
+              <List.Item>
+                <div className='text-secondary text-center'>. . .</div>
+              </List.Item>
+            </List>
+          </div>
         </div>
       </div>
+
       <div className='col'>
-        {
-          properties.length === 0 ? null : <Table.Auto data={ properties } hover/>
-        }
+
+        <Table hover>
+          <Table.Head data={ ['名称', '类型', '不为空', '默认值', '备注'] }/>
+          <Table.Body>
+            {
+              properties.map(property => <Table.Row data={ property } filter={ filter }/>)
+            }
+            <tr>
+              <td>+</td>
+              <td/>
+              <td/>
+              <td/>
+              <td/>
+            </tr>
+          </Table.Body>
+        </Table>
+
+        {/*<Table.Auto data={ properties } hover/>*/}
+
       </div>
     </div>
   ;
@@ -71,36 +169,23 @@ function View(props)
 }
 
 
-const q =
-  `
-  query
-  {
-    orm
-    {
-      id
-      name
-      note
-
-      properties
-      {
-        id
-        name
-        type
-        note
-      }
-    }
-  }
-  `
-;
-
 function ORM(props)
 {
   const element =
 
-    <XQuery query={ q }>
+    <XQuery request={ request }>
       {
         (data) =>
         {
+          const process = (value, index) =>
+          {
+            value.id = index;
+
+            // value.properties.forEach(v => delete v.__typename);
+          };
+
+          data.orm.forEach(process);
+
           return <View objects={ data.orm }/>
         }
       }

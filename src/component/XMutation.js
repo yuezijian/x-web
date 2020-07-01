@@ -5,15 +5,26 @@ import { gql } from 'apollo-boost';
 import { Mutation } from '@apollo/react-components';
 
 
-function XMutation(props)
+function XMutation({ request, update, children})
 {
+  const logic = update ? (cache, { data }) =>
+    {
+      const query = gql(request.query);
+
+      const current = cache.readQuery({ query });
+
+      cache.writeQuery({ query, data: update(current, data) })
+    }
+    : null
+  ;
+
   const element =
 
-    <Mutation mutation={ gql(props.mutation) }>
+    <Mutation mutation={ gql(request.mutation) } update={ logic }>
       {
         (mutate) =>
         {
-          return props.children(mutate);
+          return children(variables => mutate({ variables }));
         }
       }
     </Mutation>

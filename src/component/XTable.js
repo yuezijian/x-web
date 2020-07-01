@@ -45,7 +45,7 @@ function ItemUpdate(props)
 {
   const element =
 
-    <XMutation mutation={ gql_request.item_update }>
+    <XMutation request={ { mutation: gql_request.item_update } }>
       {
         (submit) =>
         {
@@ -54,7 +54,7 @@ function ItemUpdate(props)
               button
               type      = 'button'
               className = 'btn btn-warning'
-              onClick   = { () => submit({ variables: { id: props.item.id, name: misc.random_string() } }) }
+              onClick   = { () => submit({ id: props.item.id, name: misc.random_string() }) }
             >
               更新
             </button>
@@ -73,7 +73,7 @@ function ItemRemove(props)
 {
   const element =
 
-    <XMutation mutation={ gql_request.item_remove }>
+    <XMutation request={ { mutation: gql_request.item_remove } }>
       {
         (submit) =>
         {
@@ -82,7 +82,7 @@ function ItemRemove(props)
               button
               type      = 'button'
               className = 'btn btn-danger'
-              onClick   = { () => submit({ variables: { id: props.item.id } }) }
+              onClick   = { () => submit({ id: props.item.id }) }
             >
               移除
             </button>
@@ -125,11 +125,15 @@ class XTable extends React.Component
     }
 
     const element =
-      <
-        Table
-        head = { ['索引', '名称', '', ''] }
-        body = { () => this.props.data.items.map(row) }
-      />
+
+      <Table>
+        <Table.Head data={ ['索引', '名称', '', ''] }/>
+        <Table.Body>
+          {
+            this.props.data.items.map(row)
+          }
+        </Table.Body>
+      </Table>
     ;
 
     return element;
