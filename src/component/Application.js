@@ -18,6 +18,8 @@ import Example from './Example';
 
 import View from './View';
 
+import Grid from './layout/Grid';
+
 import ORM from './x-data/ORM';
 
 
@@ -33,7 +35,7 @@ class Application extends React.Component
         <Context.Provider value={ { cookies } }>
           <ApolloProvider client={ client({ token: () => cookies.get('token') }) }>
             <Authorization enable={ false }>
-              <div className='container-fluid'>
+              <Grid fluid>
                 <BrowserRouter>
                   <div className='row'>
                     <div className='col'>
@@ -56,7 +58,7 @@ class Application extends React.Component
                     </div>
                   </div>
                 </BrowserRouter>
-              </div>
+              </Grid>
             </Authorization>
           </ApolloProvider>
         </Context.Provider>

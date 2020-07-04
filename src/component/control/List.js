@@ -15,7 +15,7 @@ function List(props)
   return element;
 }
 
-List.Item = function ({ active, click, ...props })
+List.Item = function ({ type, active, click, ...props })
 {
   // const style = 'd-flex justify-content-between align-items-center';
 
@@ -27,13 +27,27 @@ List.Item = function ({ active, click, ...props })
     <
       li
       className = { style }
-      type      = 'button'
+      type      = { type }
       onClick   = { click }
     >
       {
         props.children
       }
     </li>
+  ;
+
+  return element;
+};
+
+List.Auto = function({ data })
+{
+  const element =
+
+    <div className='list-group'>
+      {
+        data.map((value, index) =><List.Item key={ index }>{ value }</List.Item>)
+      }
+    </div>
   ;
 
   return element;

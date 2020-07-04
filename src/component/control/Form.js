@@ -1,5 +1,7 @@
 import React from 'react';
 
+import layout from '../layout/Layout';
+
 
 function Form({ inline, children, ...props })
 {
@@ -19,6 +21,27 @@ function Form({ inline, children, ...props })
   return element;
 }
 
+Form.Group = function({ label, children })
+{
+  let style = 'form-group';
+
+  style += label ? ' row' : '';
+
+  const element =
+
+    <div className={ style }>
+      {
+        label ? <label className='col-1 col-form-label'>{ label }</label> : null
+      }
+      {
+        <div className='col'>{ children }</div>
+      }
+    </div>
+  ;
+
+  return element;
+};
+
 Form.Inline = function(props)
 {
   return <Form inline/>;
@@ -26,14 +49,45 @@ Form.Inline = function(props)
 
 Form.Control = {};
 
-Form.Control.Input = function({ on_change, ...props })
+Form.Control.Label = function({ text, ...props })
 {
+  let style = '';
+
+  style += layout(props);
+
+  return <label className={ style }>{ text }</label>;
+}
+
+Form.Control.Input = function({ change, ...props })
+{
+  let style = 'form-control';
+
+  style += layout(props);
+
   const element =
     <
       input
-      className   = 'form-control mr-2'
+      className   = { style }
       type        = 'text'
-      onChange    = { on_change }
+      onChange    = { change }
+      { ...props }
+    />
+  ;
+
+  return element;
+}
+
+Form.Control.Textarea = function({ on_change, ...props })
+{
+  let style = 'form-control';
+
+  style += layout(props);
+
+  const element =
+    <
+      textarea
+      className = { style }
+      onChange  = { on_change }
       { ...props }
     />
   ;

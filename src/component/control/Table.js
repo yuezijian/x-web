@@ -26,20 +26,6 @@ function TD(value, index)
   return <td key={ index }>{ value }</td>;
 }
 
-function TR(value, index)
-{
-  const element =
-
-    <tr key={ index }>
-      {
-        Object.values(value).map(TD)
-      }
-    </tr>
-  ;
-
-  return element;
-}
-
 Table.Head = function({ data })
 {
   const element =
@@ -61,11 +47,11 @@ Table.Body = function({ children })
   return <tbody>{ children }</tbody>;
 };
 
-Table.Row = function({ data, filter })
+Table.Row = function({ data, filter, ...props })
 {
   const element =
 
-    <tr key={ data.id }>
+    <tr>
       {/*<td>*/}
       {/*  <input type='checkbox'/>*/}
       {/*</td>*/}
