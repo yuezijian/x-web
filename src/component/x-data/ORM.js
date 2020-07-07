@@ -11,6 +11,7 @@ import Entity from './Entity';
 
 import XMutation from '../XMutation';
 import XQuery from '../XQuery';
+import Alert from "../control/Alert";
 
 
 const request =
@@ -136,15 +137,18 @@ function View(props)
     return { orm };
   };
 
+  const todos =
+    [
+      '添加实体',
+      '添加属性',
+      '命名规则检查',
+      '重复名称检查'
+    ];
+
   const element =
 
     <div>
       <Grid.Row>
-        <Grid.Column>
-          <List.Auto data={ ['添加新实体需要'] }/>
-        </Grid.Column>
-      </Grid.Row>
-      <Grid.Row layout='mt-3'>
         <Grid.Column size={ 3 }>
           <List>
             {
@@ -158,6 +162,11 @@ function View(props)
         <Grid.Column>
           {
             render_entity(entity)
+          }
+        </Grid.Column>
+        <Grid.Column size='auto'>
+          {
+            todos.map((value, index) => <Alert.Info key={ index }>{ value }</Alert.Info>)
           }
         </Grid.Column>
       </Grid.Row>

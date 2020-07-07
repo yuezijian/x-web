@@ -1,7 +1,9 @@
 import React from 'react';
 
+import layout from '../layout/Layout';
 
-function Button({ type, outline, small, click, children, ...props })
+
+function Button({ type, outline, small, click, active, children, ...props })
 {
   let style = 'btn';
 
@@ -9,6 +11,8 @@ function Button({ type, outline, small, click, children, ...props })
 
   style +=  ` btn-${ outline ? 'outline-' : '' }${ type }`;
   style += small ? ' btn-sm' : '';
+  style += active ? ' active' : '';
+  style += layout(props);
 
   const element =
 
@@ -40,6 +44,11 @@ Button.Success = function(props)
 Button.Danger = function(props)
 {
   return <Button type='danger' { ...props }/>;
+};
+
+Button.Dark = function(props)
+{
+  return <Button type='dark' { ...props }/>;
 };
 
 

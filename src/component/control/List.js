@@ -17,11 +17,10 @@ function List(props)
 
 List.Item = function ({ type, active, click, ...props })
 {
-  // const style = 'd-flex justify-content-between align-items-center';
-
   let style = 'list-group-item';
 
   style += active ? ' list-group-item-primary' : '';
+  style += ' d-flex justify-content-between align-items-center';
 
   const element =
     <

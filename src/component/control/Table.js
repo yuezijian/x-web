@@ -47,7 +47,7 @@ Table.Body = function({ children })
   return <tbody>{ children }</tbody>;
 };
 
-Table.Row = function({ data, filter, ...props })
+Table.Row = function({ data, ...props })
 {
   const element =
 
@@ -56,7 +56,7 @@ Table.Row = function({ data, filter, ...props })
       {/*  <input type='checkbox'/>*/}
       {/*</td>*/}
       {
-        filter ? filter.map(value => data[value]).map(TD) : Object.values(data).map(TD)
+        Object.values(data).map(TD)
       }
     </tr>
   ;
@@ -85,6 +85,29 @@ Table.Auto = function({ data, ...props })
       <tbody>
       {
         body.map(value => <Table.Row data={ value }/>)
+      }
+      </tbody>
+    </Table>
+  ;
+
+  return element;
+};
+
+Table.Quick = function({ data, head, filter, ...props })
+{
+  const element =
+
+    <Table>
+      <thead>
+      <tr>
+        {
+          head.map((value, index) => <th key={ index }>{ value }</th>)
+        }
+      </tr>
+      </thead>
+      <tbody>
+      {
+        data.map((value, index) => <Table.Row key={ index } data={ filter ? filter.map(key => value[key]) : value }/>)
       }
       </tbody>
     </Table>
