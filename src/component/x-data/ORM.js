@@ -65,11 +65,8 @@ const request =
   };
 
 
-
 function render_entity(entity)
 {
-  const filter = ['name', 'type', 'not_null', 'default_value', 'note'];
-
   const element =
 
     <div>
@@ -80,22 +77,13 @@ function render_entity(entity)
       </Grid.Row>
       <Grid.Row>
         <Grid.Column>
-          <Table hover>
-            <Table.Head data={ ['属性', '类型', '不为空', '默认值', '备注'] }/>
-            <Table.Body>
-              {
-                entity.properties.map((property, index) => <Table.Row key={ index } data={ property } filter={ filter }/>)
-              }
-              <tr>
-                <td>+</td>
-                <td/>
-                <td/>
-                <td/>
-                <td/>
-              </tr>
-            </Table.Body>
-          </Table>
-          {/*<Table.Auto data={ properties } hover/>*/}
+          <
+            Table.Quick
+            data   = { entity.properties }
+            head   = { ['属性', '类型', '不为空', '默认值', '备注'] }
+            filter = { ['name', 'type', 'not_null', 'default_value', 'note'] }
+            hover
+          />
         </Grid.Column>
       </Grid.Row>
     </div>

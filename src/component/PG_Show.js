@@ -9,6 +9,7 @@ import Table from "./control/Table";
 import List from "./control/List";
 import Grid from "./layout/Grid";
 import Button from "./control/Button";
+import Collapse from "./control/Collapse";
 
 
 const request =
@@ -116,10 +117,35 @@ function TheView(props)
     return button;
   };
 
+  const item_entity_card = (value, index) =>
+  {
+    const body =
+      <
+        Table.Quick
+        data = { value.properties }
+        head = { ['名称', '类型', '备注'] }
+        filter = { ['name', 'type', 'note'] }
+        hover
+      />;
+
+    const item =
+      <
+        Collapse.Card
+        key    = { index }
+        id     = { index }
+        parent = 'entity-list'
+        head   = { `${ value.name } ${ value.note ? ` [ ${ value.note } ]` : '' }` }
+        body   = { body }
+      />
+    ;
+
+    return item;
+  };
+
   const element =
 
     <Grid.Row>
-      <Grid.Column size={ 2 }>
+      <Grid.Column size={ 3 }>
         <List>
           {
             props.projects.map(item_project)
@@ -127,28 +153,11 @@ function TheView(props)
         </List>
       </Grid.Column>
       <Grid.Column>
-        <Grid.Row>
-          <Grid.Column>
-            {
-              project.entities.map(item_entity)
-            }
-            {
-              entity.properties.length === 0 ? null
-                :
-                <Grid.Row layout='mt-2'>
-                  <Grid.Column>
-                    <
-                      Table.Quick
-                      data = { entity.properties }
-                      head = { ['名称', '类型', '备注'] }
-                      filter = { ['name', 'type', 'note'] }
-                      hover
-                    />
-                  </Grid.Column>
-                </Grid.Row>
-            }
-          </Grid.Column>
-        </Grid.Row>
+        <Collapse id='entity-list'>
+          {
+            project.entities.map(item_entity_card)
+          }
+        </Collapse>
       </Grid.Column>
     </Grid.Row>
   ;
@@ -157,7 +166,7 @@ function TheView(props)
 }
 
 
-function View()
+function PG_Show()
 {
   const element =
 
@@ -178,4 +187,4 @@ function View()
 }
 
 
-export default View;
+export default PG_Show;

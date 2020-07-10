@@ -14,13 +14,12 @@ import Navigation from './Navigation';
 
 import client from '../client';
 
-import Example from './Example';
-
-import View from './View';
-
 import Grid from './layout/Grid';
 
-import ORM from './x-data/ORM';
+import XView   from './XView';
+import Example from './Example';
+import ORM     from './x-data/ORM';
+import PG_Show from './PG_Show';
 
 
 class Application extends React.Component
@@ -46,13 +45,16 @@ class Application extends React.Component
                     <div className='col'>
                       <Switch>
                         <Route path='/' exact={ true }>
-                          <View/>
+                          <XView/>
                         </Route>
-                        <Route path='/example/subscription'>
-                          <Example.Subscription/>
+                        <Route path='/his3'>
+                          <PG_Show/>
                         </Route>
                         <Route path='/x-data/orm'>
                           <ORM/>
+                        </Route>
+                        <Route path='/example/subscription'>
+                          <Example.Subscription/>
                         </Route>
                       </Switch>
                     </div>

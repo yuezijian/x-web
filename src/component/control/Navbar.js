@@ -5,13 +5,27 @@ import { Link } from 'react-router-dom';
 
 function Navbar(props)
 {
-  return <nav className='nav navbar-expand'>{ props.children }</nav>;
+  const element =
+
+    <nav className='navbar navbar-expand navbar-light bg-light'>
+      {
+        props.children
+      }
+    </nav>
+  ;
+
+  return element;
 }
 
 Navbar.Brand = function(props)
 {
   return <div className='navbar-brand'>{ props.children }</div>;
 }
+
+Navbar.Navigation = function(props)
+{
+  return<ul className='navbar-nav mr-auto'>{ props.children }</ul>;
+};
 
 Navbar.Collapse = function({ children, ...props })
 {
@@ -38,11 +52,27 @@ Navbar.Collapse = function({ children, ...props })
   return element;
 }
 
+Navbar.Link = function({ children, ...props})
+{
+  const element =
+
+    <li className='nav-item'>
+      <Link className='nav-link' { ...props }>
+        {
+          children
+        }
+      </Link>
+    </li>
+  ;
+
+  return element;
+}
+
 Navbar.Dropdown = function({ id, title, children, ...props })
 {
   const element =
 
-    <div>
+    <li className='nav-item dropdown'>
       <
         div
         id            = { id }
@@ -61,15 +91,29 @@ Navbar.Dropdown = function({ id, title, children, ...props })
           children
         }
       </div>
-    </div>
+    </li>
   ;
 
   return element;
 }
 
-Navbar.Link = function({ children, ...props})
+Navbar.Dropdown.Link = function({ children, ...props })
 {
-  return <Link className='nav-link' { ...props }>{ children }</Link>;
+  const element =
+
+    <Link className='dropdown-item' { ...props }>
+      {
+        children
+      }
+    </Link>
+  ;
+
+  return element;
+}
+
+Navbar.Dropdown.Divider = function()
+{
+  return <div className='dropdown-divider'/>;
 }
 
 
