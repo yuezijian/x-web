@@ -18,7 +18,7 @@ const request =
       `
         query
         {
-          domains
+          pg
           {
             name
 
@@ -48,27 +48,21 @@ const request =
 
 function init(data)
 {
-  let i_domain   = 0;
   let i_project  = 0;
   let i_entity   = 0;
   let i_property = 0;
 
-  for (const domain of data.domains)
+  for (const project of data.pg.projects)
   {
-    domain.id = i_domain++;
+    project.id = i_project++;
 
-    for (const project of domain.projects)
+    for (const entity of project.entities)
     {
-      project.id = i_project++;
+      entity.id = i_entity++;
 
-      for (const entity of project.entities)
+      for (const property of entity.properties)
       {
-        entity.id = i_entity++;
-
-        for (const property of entity.properties)
-        {
-          property.id = i_property++;
-        }
+        property.id = i_property++;
       }
     }
   }
@@ -176,7 +170,7 @@ function PG_Show()
         {
           init(data);
 
-          return <TheView projects={ data.domains[0].projects }/>
+          return <TheView projects={ data.pg.projects }/>
           // return <D3SVG width={ 1200 } height={ 800 } scene={ scene } data={ data }/>
         }
       }

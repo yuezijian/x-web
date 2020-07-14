@@ -20,18 +20,24 @@ const request =
       `
         query
         {
-          orm
+          project
           {
             name
             note
 
-            properties
+            entities
             {
               name
-              type
-              not_null
-              default_value
               note
+
+              properties
+              {
+                name
+                type
+                not_null
+                default_value
+                note
+              }
             }
           }
         }
@@ -178,9 +184,9 @@ function ORM(props)
             value.id = index;
           };
 
-          data.orm.forEach(process);
+          data.project.entities.forEach(process);
 
-          return <View entities={ data.orm }/>
+          return <View entities={ data.project.entities }/>
         }
       }
     </XQuery>
