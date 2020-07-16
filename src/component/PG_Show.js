@@ -18,7 +18,7 @@ const request =
       `
         query
         {
-          pg
+          pg_domains
           {
             name
 
@@ -48,21 +48,27 @@ const request =
 
 function init(data)
 {
+  let i_domain   = 0;
   let i_project  = 0;
   let i_entity   = 0;
   let i_property = 0;
 
-  for (const project of data.pg.projects)
+  for (const domain of data.pg_domains)
   {
-    project.id = i_project++;
+    domain.id = i_domain++;
 
-    for (const entity of project.entities)
+    for (const project of domain.projects)
     {
-      entity.id = i_entity++;
+      project.id = i_project++;
 
-      for (const property of entity.properties)
+      for (const entity of project.entities)
       {
-        property.id = i_property++;
+        entity.id = i_entity++;
+
+        for (const property of entity.properties)
+        {
+          property.id = i_property++;
+        }
       }
     }
   }
@@ -71,28 +77,27 @@ function init(data)
 
 function TheView(props)
 {
+  const [ domain,  SetDomain  ] = useState({ projects:   [] });
   const [ project, SetProject ] = useState({ entities:   [] });
   const [ entity,  SetEntity  ] = useState({ properties: [] });
 
-  const item_project = (value, index) =>
-  {
-    const click = () =>
+  const item_domain =
     {
-      SetProject(value)
+      render: value => value.name,
+
+      click: value => SetDomain(value),
+
+      active: value => value.id === domain.id
     };
 
-    const item =
+  const item_project =
+    {
+      render: value => [value.name, <div><span className='badge badge-dark'>{ value.entities.length }</span></div>],
 
-      <List.Item key={ index } type='button' click={ click } active={ project.id === value.id }>
-        {
-          value.name
-        }
-        <span className='badge badge-dark'>{ value.entities.length }</span>
-      </List.Item>
-    ;
+      click: value => SetProject(value),
 
-    return item;
-  };
+      active: value => value.id === project.id
+    };
 
   const item_entity = (value, index) =>
   {
@@ -138,22 +143,25 @@ function TheView(props)
 
   const element =
 
-    <Grid.Row>
-      <Grid.Column size={ 3 }>
-        <List>
-          {
-            props.projects.map(item_project)
-          }
-        </List>
-      </Grid.Column>
-      <Grid.Column>
-        <Collapse id='entity-list'>
-          {
-            project.entities.map(item_entity_card)
-          }
-        </Collapse>
-      </Grid.Column>
-    </Grid.Row>
+    <div>
+      <Grid.Row>
+        <Grid.Column>
+          <List.Quick data={ props.domains } item={ item_domain } horizontal/>
+        </Grid.Column>
+      </Grid.Row>
+      <Grid.Row layout='mt-2'>
+        <Grid.Column size={ 3 }>
+          <List.Quick data={ domain.projects } item={ item_project }/>
+        </Grid.Column>
+        <Grid.Column>
+          <Collapse id='entity-list'>
+            {
+              project.entities.map(item_entity_card)
+            }
+          </Collapse>
+        </Grid.Column>
+      </Grid.Row>
+    </div>
   ;
 
   return element;
@@ -170,7 +178,7 @@ function PG_Show()
         {
           init(data);
 
-          return <TheView projects={ data.pg.projects }/>
+          return <TheView domains={ data.pg_domains }/>
           // return <D3SVG width={ 1200 } height={ 800 } scene={ scene } data={ data }/>
         }
       }

@@ -38,13 +38,31 @@ List.Item = function ({ type, active, click, ...props })
   return element;
 };
 
-List.Auto = function({ data })
+List.Quick = function({ data, item, horizontal })
 {
+  let style = 'list-group';
+
+  style += horizontal ? ' list-group-horizontal' : '';
+
+  const callback = (value, index) =>
+    <
+      List.Item
+      key    = { index }
+      type   = 'button'
+      click  = { () => item.click(value) }
+      active = { item.active(value) }
+    >
+      {
+        item.render(value)
+      }
+    </List.Item>
+  ;
+
   const element =
 
-    <div className='list-group'>
+    <div className={ style }>
       {
-        data.map((value, index) =><List.Item key={ index }>{ value }</List.Item>)
+        data.map(callback)
       }
     </div>
   ;
