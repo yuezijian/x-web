@@ -34,7 +34,7 @@ class Application extends React.Component
         <Context.Provider value={ { cookies } }>
           <ApolloProvider client={ client({ token: () => cookies.get('token') }) }>
             <Authorization enable={ false }>
-              <Grid fluid>
+              <Grid layout='p-0' fluid>
                 <BrowserRouter>
                   <div className='row'>
                     <div className='col'>

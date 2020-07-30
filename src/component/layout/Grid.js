@@ -3,11 +3,12 @@ import React from 'react';
 import layout from './Layout';
 
 
-function Grid({ fluid, children })
+function Grid({ fluid, children, ...props })
 {
   let style = 'container';
 
   style += fluid ? '-fluid' : '';
+  style += layout(props);
 
   return <div className={ style }>{ children }</div>;
 }

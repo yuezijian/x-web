@@ -12,6 +12,7 @@ import Entity from './Entity';
 import XMutation from '../XMutation';
 import XQuery from '../XQuery';
 import Alert from "../control/Alert";
+import Tab from "../control/Tab";
 
 
 const request =
@@ -76,11 +77,11 @@ function render_entity(entity)
   const element =
 
     <div>
-      <Grid.Row>
-        <Grid.Column>
+      {/*<Grid.Row>*/}
+      {/*  <Grid.Column>*/}
           <Entity key={ entity.id } data={ entity }/>
-        </Grid.Column>
-      </Grid.Row>
+      {/*  </Grid.Column>*/}
+      {/*</Grid.Row>*/}
       <Grid.Row>
         <Grid.Column>
           <
@@ -101,9 +102,14 @@ function render_entity(entity)
 
 function View(props)
 {
-  const [ entity, SetEntity ] = useState({ name: '', note: '', properties: []});
+  const [ entity, SetEntity ] = useState({ name: '', note: '', properties: [] });
 
-  const [ object_name, SetObjectName ] = useState('');
+  const item_entity =
+    {
+      render: value => value.name,
+
+      click: value => SetEntity(value)
+    };
 
   const item_object = (object, index) =>
   {
@@ -134,6 +140,7 @@ function View(props)
   const todos =
     [
       '添加实体',
+      '修改实体',
       '添加属性',
       '命名规则检查',
       '重复名称检查'
@@ -141,28 +148,44 @@ function View(props)
 
   const element =
 
-    <div>
-      <Grid.Row>
-        <Grid.Column size={ 3 }>
-          <List>
-            {
-              props.entities.map(item_object)
-            }
-            <List.Item key={ -1 } type='button' click={ () => console.log('') }>
-              <div className='text-secondary text-center'>新实体</div>
-            </List.Item>
-          </List>
+    <div className='mx-3'>
+      <Grid.Row layout='mt-3'>
+        <Grid.Column>
+          <Button outline>新实体</Button>
+        </Grid.Column>
+      </Grid.Row>
+      <Grid.Row layout='mt-3'>
+        <Grid.Column>
+          <List data={ props.entities } element={ item_entity }/>
         </Grid.Column>
         <Grid.Column>
-          {
-            render_entity(entity)
-          }
+          <Tab>
+            <Tab.Link to='#information'>基本信息</Tab.Link>
+            <Tab.Link to='#property'   >属性</Tab.Link>
+            <Tab.Link to='#association'>关系</Tab.Link>
+          </Tab>
+          <Tab.Content layout='mt-4'>
+            <Tab.Panel id='information' show>
+              <Entity key={ entity.id } data={ entity }/>
+            </Tab.Panel>
+            <Tab.Panel id='property'>
+              <
+                Table.Quick
+                data   = { entity.properties }
+                head   = { ['属性', '类型', '不为空', '默认值', '备注'] }
+                filter = { ['name', 'type', 'not_null', 'default_value', 'note'] }
+                borderless
+                hover
+              />
+            </Tab.Panel>
+            <Tab.Panel id='association'>Coming soon</Tab.Panel>
+          </Tab.Content>
         </Grid.Column>
-        <Grid.Column size='auto'>
-          {
-            todos.map((value, index) => <Alert.Info key={ index }>{ value }</Alert.Info>)
-          }
-        </Grid.Column>
+        {/*<Grid.Column size='auto'>*/}
+        {/*  {*/}
+        {/*    todos.map((value, index) => <Alert.Info key={ index }>{ value }</Alert.Info>)*/}
+        {/*  }*/}
+        {/*</Grid.Column>*/}
       </Grid.Row>
     </div>
   ;

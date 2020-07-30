@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // import D3SVG from './D3SVG';
 
@@ -81,6 +81,8 @@ function TheView(props)
   const [ project, SetProject ] = useState({ entities:   [] });
   const [ entity,  SetEntity  ] = useState({ properties: [] });
 
+  useEffect(() => SetProject({ entities: [] }), [domain]);
+
   const item_domain =
     {
       render: value => value.name,
@@ -92,7 +94,7 @@ function TheView(props)
 
   const item_project =
     {
-      render: value => [value.name, <div><span className='badge badge-dark'>{ value.entities.length }</span></div>],
+      render: value => <div className='d-flex justify-content-between align-items-center'>{ value.name }<span className='badge badge-dark'>{ value.entities.length }</span></div>,
 
       click: value => SetProject(value),
 
@@ -146,12 +148,12 @@ function TheView(props)
     <div>
       <Grid.Row>
         <Grid.Column>
-          <List.Quick data={ props.domains } item={ item_domain } horizontal/>
+          <List data={ props.domains } element={ item_domain } horizontal/>
         </Grid.Column>
       </Grid.Row>
       <Grid.Row layout='mt-2'>
         <Grid.Column size={ 3 }>
-          <List.Quick data={ domain.projects } item={ item_project }/>
+          <List data={ domain.projects } element={ item_project }/>
         </Grid.Column>
         <Grid.Column>
           <Collapse id='entity-list'>

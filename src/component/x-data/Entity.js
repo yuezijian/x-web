@@ -12,10 +12,10 @@ function Entity({ data })
 
     <Form>
       <Form.Group label='名称'>
-        <Form.Control.Input value={ name } change={ event => SetName(event.target.value) }/>
+        <Form.Control.Input value={ name ? name : '' } change={ event => SetName(event.target.value) }/>
       </Form.Group>
       <Form.Group label='备注'>
-        <Form.Control.Input value={ note } change={ event => SetNote(event.target.value) }/>
+        <Form.Control.Input value={ note ? note : '' } change={ event => SetNote(event.target.value) }/>
       </Form.Group>
     </Form>
   ;

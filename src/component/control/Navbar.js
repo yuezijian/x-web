@@ -20,7 +20,7 @@ function Navbar(props)
 Navbar.Brand = function(props)
 {
   return <div className='navbar-brand'>{ props.children }</div>;
-}
+};
 
 Navbar.Navigation = function(props)
 {
@@ -50,7 +50,7 @@ Navbar.Collapse = function({ children, ...props })
   ;
 
   return element;
-}
+};
 
 Navbar.Link = function({ children, ...props})
 {
@@ -66,7 +66,7 @@ Navbar.Link = function({ children, ...props})
   ;
 
   return element;
-}
+};
 
 Navbar.Dropdown = function({ id, title, children, ...props })
 {
@@ -95,7 +95,7 @@ Navbar.Dropdown = function({ id, title, children, ...props })
   ;
 
   return element;
-}
+};
 
 Navbar.Dropdown.Link = function({ children, ...props })
 {
@@ -109,12 +109,12 @@ Navbar.Dropdown.Link = function({ children, ...props })
   ;
 
   return element;
-}
+};
 
 Navbar.Dropdown.Divider = function()
 {
   return <div className='dropdown-divider'/>;
-}
+};
 
 
 export default Navbar;

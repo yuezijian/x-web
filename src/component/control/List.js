@@ -1,13 +1,36 @@
 import React from 'react';
 
 
-function List(props)
+function List({ data, element, horizontal })
 {
+  const item = (value, index) =>
+    <
+      List.Item
+      key    = { index }
+      type   = 'button'
+      click  = { element.click ? () => element.click(value) : null }
+      active = { element.active ? element.active(value) : null }
+    >
+      {
+        element.render(value)
+      }
+    </List.Item>
+  ;
+
+  return <List.Group horizontal={ horizontal }>{ data.map(item) }</List.Group>;
+}
+
+List.Group = function({ horizontal, children, ...props })
+{
+  let style = 'list-group';
+
+  style += horizontal ? ' list-group-horizontal' : '';
+
   const element =
 
-    <div className='list-group'>
+    <div className={ style }>
       {
-        props.children
+        children
       }
     </div>
   ;
@@ -20,7 +43,6 @@ List.Item = function ({ type, active, click, ...props })
   let style = 'list-group-item';
 
   style += active ? ' list-group-item-primary' : '';
-  style += ' d-flex justify-content-between align-items-center';
 
   const element =
     <
@@ -33,38 +55,6 @@ List.Item = function ({ type, active, click, ...props })
         props.children
       }
     </li>
-  ;
-
-  return element;
-};
-
-List.Quick = function({ data, item, horizontal })
-{
-  let style = 'list-group';
-
-  style += horizontal ? ' list-group-horizontal' : '';
-
-  const callback = (value, index) =>
-    <
-      List.Item
-      key    = { index }
-      type   = 'button'
-      click  = { () => item.click(value) }
-      active = { item.active(value) }
-    >
-      {
-        item.render(value)
-      }
-    </List.Item>
-  ;
-
-  const element =
-
-    <div className={ style }>
-      {
-        data.map(callback)
-      }
-    </div>
   ;
 
   return element;

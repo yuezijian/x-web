@@ -49,7 +49,7 @@ function link(host, port, authorization)
 
   const link_auth = new ApolloLink(handler);
   const link_http = new HttpLink({ uri: `http://${ host }:${ port }/graphql` });
-  const link_ws   = new WebSocketLink({ uri: `ws://${ host }:${ port }/subscriptions`, options: { reconnect: true } });
+  const link_ws   = new WebSocketLink({ uri: `ws://${ host }:${ port }/graphql`, options: { reconnect: true } });
 
   const test = ({ query }) =>
   {

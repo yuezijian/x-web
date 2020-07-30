@@ -1,12 +1,13 @@
 import React from 'react';
 
 
-function Table({ hover, small, ...props })
+function Table({ borderless, hover, small, ...props })
 {
   let style = 'table';
 
-  style += hover ? ' table-hover' : '';
-  style += small ? ' table-sm'    : '';
+  style += borderless ? ' table-borderless' : '';
+  style += hover      ? ' table-hover'      : '';
+  style += small      ? ' table-sm'         : '';
 
   const element =
 
@@ -97,7 +98,7 @@ Table.Quick = function({ data, head, filter, ...props })
 {
   const element =
 
-    <Table>
+    <Table { ...props }>
       <thead>
       <tr>
         {
