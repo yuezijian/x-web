@@ -10,25 +10,26 @@ function Grid({ fluid, children, ...props })
   style += fluid ? '-fluid' : '';
   style += layout(props);
 
-  return <div className={ style }>{ children }</div>;
+  return <div className={ style } { ...props }>{ children }</div>;
 }
 
-Grid.Row = function({ children, ...props })
+Grid.Row = function ({ children, ...props })
 {
   let style = 'row';
 
   style += layout(props);
 
-  return <div className={ style }>{ children }</div>
+  return <div className={ style } { ...props }>{ children }</div>
 };
 
-Grid.Column = function({ size, children })
+Grid.Column = function ({ size, children, ...props })
 {
   let style = 'col';
 
   style += size ? `-${ size }` : '';
+  style += layout(props);
 
-  return <div className={ style }>{ children }</div>
+  return <div className={ style } { ...props }>{ children }</div>
 };
 
 

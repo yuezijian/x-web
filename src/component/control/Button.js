@@ -16,7 +16,7 @@ function Button({ type, outline, small, click, active, children, ...props })
 
   const element =
 
-    <button className={ style } type='button' onClick={ click }>
+    <button className={ style } type='button' onClick={ click } { ...props }>
       {
         children
       }
@@ -26,39 +26,56 @@ function Button({ type, outline, small, click, active, children, ...props })
   return element;
 }
 
-Button.Primary = function(props)
+Button.Group = function ({ small, children, ...props })
 {
-  return <Button type='primary' { ...props }/>;
+  let style = 'btn-group';
+
+  style += small ? ' btn-group-sm' : '';
+
+  const element =
+
+    <div className={ style } role='group'>
+      {
+        children
+      }
+    </div>
+  ;
+
+  return element;
 };
 
-Button.Secondary = function(props)
-{
-  return <Button type='secondary' { ...props }/>;
-};
+Button.Type =
+  {
+    Primary(props)
+    {
+      return <Button type='primary' { ...props }/>;
+    },
 
-Button.Success = function(props)
-{
-  return <Button type='success' { ...props }/>;
-};
+    Secondary(props)
+    {
+      return <Button type='secondary' { ...props }/>;
+    },
 
-Button.Danger = function(props)
-{
-  return <Button type='danger' { ...props }/>;
-};
+    Success(props)
+    {
+      return <Button type='success' { ...props }/>;
+    },
 
-Button.Dark = function(props)
-{
-  return <Button type='dark' { ...props }/>;
-};
+    Danger(props)
+    {
+      return <Button type='danger' { ...props }/>;
+    },
+
+    Dark(props)
+    {
+      return <Button type='dark' { ...props }/>;
+    },
+
+    Light(props)
+    {
+      return <Button type='light' { ...props }/>;
+    }
+  };
 
 
 export default Button;
-
-
-/*
-            <div className='btn-group btn-group-sm' role='group'>
-              <Button        outline>新增</Button>
-              <Button.Danger outline>删除</Button.Danger>
-            </div>
-
-*/

@@ -55,7 +55,7 @@ function zoom()
   const transform = d3.event.transform;
 }
 
-my_scene.setup = function(svg, root, data, size)
+my_scene.setup = function (svg, root, data, size)
 {
   const projects = data.domains[0].projects;
 

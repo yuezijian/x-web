@@ -15,7 +15,7 @@ function Collapse({ id, children, ...props })
   return element;
 }
 
-Collapse.Card = function({ parent, id, head, body, ...props})
+Collapse.Card = function ({ parent, id, head, body, ...props})
 {
   const element =
 

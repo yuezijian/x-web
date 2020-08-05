@@ -16,6 +16,7 @@ import client from '../client';
 
 import Grid from './layout/Grid';
 
+import XEditor from './XEditor';
 import XView   from './XView';
 import Example from './Example';
 import ORM     from './x-data/ORM';
@@ -34,14 +35,14 @@ class Application extends React.Component
         <Context.Provider value={ { cookies } }>
           <ApolloProvider client={ client({ token: () => cookies.get('token') }) }>
             <Authorization enable={ false }>
-              <Grid layout='p-0' fluid>
+              <Grid fluid>
                 <BrowserRouter>
                   <div className='row'>
                     <div className='col'>
                       <Navigation/>
                     </div>
                   </div>
-                  <div className='row my-2'>
+                  <div className='row'>
                     <div className='col'>
                       <Switch>
                         <Route path='/' exact={ true }>
@@ -55,6 +56,9 @@ class Application extends React.Component
                         </Route>
                         <Route path='/example/subscription'>
                           <Example.Subscription/>
+                        </Route>
+                        <Route path='/editor'>
+                          <XEditor/>
                         </Route>
                       </Switch>
                     </div>

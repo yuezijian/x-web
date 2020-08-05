@@ -17,17 +17,17 @@ function Navbar(props)
   return element;
 }
 
-Navbar.Brand = function(props)
+Navbar.Brand = function (props)
 {
   return <div className='navbar-brand'>{ props.children }</div>;
 };
 
-Navbar.Navigation = function(props)
+Navbar.Navigation = function (props)
 {
   return<ul className='navbar-nav mr-auto'>{ props.children }</ul>;
 };
 
-Navbar.Collapse = function({ children, ...props })
+Navbar.Collapse = function ({ children, ...props })
 {
   const element =
 
@@ -52,7 +52,7 @@ Navbar.Collapse = function({ children, ...props })
   return element;
 };
 
-Navbar.Link = function({ children, ...props})
+Navbar.Link = function ({ children, ...props})
 {
   const element =
 
@@ -68,7 +68,7 @@ Navbar.Link = function({ children, ...props})
   return element;
 };
 
-Navbar.Dropdown = function({ id, title, children, ...props })
+Navbar.Dropdown = function ({ id, title, children, ...props })
 {
   const element =
 
@@ -97,7 +97,7 @@ Navbar.Dropdown = function({ id, title, children, ...props })
   return element;
 };
 
-Navbar.Dropdown.Link = function({ children, ...props })
+Navbar.Dropdown.Link = function ({ children, ...props })
 {
   const element =
 
@@ -111,7 +111,7 @@ Navbar.Dropdown.Link = function({ children, ...props })
   return element;
 };
 
-Navbar.Dropdown.Divider = function()
+Navbar.Dropdown.Divider = function ()
 {
   return <div className='dropdown-divider'/>;
 };

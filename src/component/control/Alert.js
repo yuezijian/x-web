@@ -19,27 +19,27 @@ function Alert({ type, children, ...props })
   return element;
 }
 
-Alert.Primary = function(props)
+Alert.Primary = function (props)
 {
   return <Alert type='primary' { ...props }/>;
 };
 
-Alert.Secondary = function(props)
+Alert.Secondary = function (props)
 {
   return <Alert type='secondary' { ...props }/>;
 };
 
-Alert.Success = function(props)
+Alert.Success = function (props)
 {
   return <Alert type='success' { ...props }/>;
 };
 
-Alert.Danger = function(props)
+Alert.Danger = function (props)
 {
   return <Alert type='danger' { ...props }/>;
 };
 
-Alert.Info = function(props)
+Alert.Info = function (props)
 {
   return <Alert type='info' { ...props }/>;
 };

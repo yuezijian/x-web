@@ -20,7 +20,7 @@ function List({ data, element, horizontal })
   return <List.Group horizontal={ horizontal }>{ data.map(item) }</List.Group>;
 }
 
-List.Group = function({ horizontal, children, ...props })
+List.Group = function ({ horizontal, children, ...props })
 {
   let style = 'list-group';
 

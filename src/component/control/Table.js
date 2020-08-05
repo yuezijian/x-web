@@ -27,7 +27,7 @@ function TD(value, index)
   return <td key={ index }>{ value }</td>;
 }
 
-Table.Head = function({ data })
+Table.Head = function ({ data })
 {
   const element =
 
@@ -43,12 +43,12 @@ Table.Head = function({ data })
   return element;
 };
 
-Table.Body = function({ children })
+Table.Body = function ({ children })
 {
   return <tbody>{ children }</tbody>;
 };
 
-Table.Row = function({ data, ...props })
+Table.Row = function ({ data, ...props })
 {
   const element =
 
@@ -65,7 +65,7 @@ Table.Row = function({ data, ...props })
   return element;
 }
 
-Table.Auto = function({ data, ...props })
+Table.Auto = function ({ data, ...props })
 {
   let body = [{ table: 'no data' }];
 
@@ -94,7 +94,7 @@ Table.Auto = function({ data, ...props })
   return element;
 };
 
-Table.Quick = function({ data, head, filter, ...props })
+Table.Quick = function ({ data, head, filter, ...props })
 {
   const element =
 

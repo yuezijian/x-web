@@ -19,7 +19,7 @@ function Tab(props)
   return element;
 }
 
-Tab.Link = function({ to, children, ...props})
+Tab.Link = function ({ to, children, ...props})
 {
   const element =
 
@@ -31,7 +31,7 @@ Tab.Link = function({ to, children, ...props})
   return element;
 };
 
-Tab.Content = function({ children, ...props})
+Tab.Content = function ({ children, ...props})
 {
   let style = 'tab-content';
 
@@ -40,7 +40,7 @@ Tab.Content = function({ children, ...props})
   return <div className={ style }>{ children }</div>;
 };
 
-Tab.Panel = function({ id, show, children, ...props})
+Tab.Panel = function ({ id, show, children, ...props})
 {
   const element =
 

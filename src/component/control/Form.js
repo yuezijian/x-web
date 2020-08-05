@@ -21,7 +21,7 @@ function Form({ inline, children, ...props })
   return element;
 }
 
-Form.Group = function({ label, children })
+Form.Group = function ({ label, children })
 {
   let style = 'form-group';
 
@@ -42,14 +42,14 @@ Form.Group = function({ label, children })
   return element;
 };
 
-Form.Inline = function(props)
+Form.Inline = function (props)
 {
   return <Form inline/>;
 };
 
 Form.Control = {};
 
-Form.Control.Label = function({ text, ...props })
+Form.Control.Label = function ({ text, ...props })
 {
   let style = '';
 
@@ -58,7 +58,7 @@ Form.Control.Label = function({ text, ...props })
   return <label className={ style }>{ text }</label>;
 }
 
-Form.Control.Input = function({ change, ...props })
+Form.Control.Input = function ({ change, ...props })
 {
   let style = 'form-control';
 
@@ -77,7 +77,7 @@ Form.Control.Input = function({ change, ...props })
   return element;
 }
 
-Form.Control.Textarea = function({ on_change, ...props })
+Form.Control.Textarea = function ({ on_change, ...props })
 {
   let style = 'form-control';
 

@@ -31,6 +31,8 @@ class Navigation extends React.Component
             <Navbar.Dropdown.Link to='/example/subscription'>订阅</Navbar.Dropdown.Link>
           </Navbar.Dropdown>
 
+          <Navbar.Link to='/editor'>编辑器</Navbar.Link>
+
         </Navbar.Navigation>
 
       </Navbar>
