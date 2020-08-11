@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 
-import Grid from './layout/Grid';
+import Grid from './control/Grid';
 
 
 function XView(props)

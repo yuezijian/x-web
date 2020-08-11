@@ -11,7 +11,11 @@ import { ReactComponent as ListCheck     } from 'bootstrap-icons/icons/list-chec
 import { ReactComponent as ListOrdered   } from 'bootstrap-icons/icons/list-ol.svg';
 import { ReactComponent as ListUnordered } from 'bootstrap-icons/icons/list-ul.svg';
 
+import { ReactComponent as Image } from 'bootstrap-icons/icons/image.svg';
 import { ReactComponent as Table } from 'bootstrap-icons/icons/table.svg';
+
+import { ReactComponent as Brush   } from 'bootstrap-icons/icons/brush.svg';
+import { ReactComponent as Printer } from 'bootstrap-icons/icons/printer.svg';
 
 
 function Icon()
@@ -30,7 +34,11 @@ Icon.ListCheck     = props => <ListCheck     { ...props }/>;
 Icon.ListOrdered   = props => <ListOrdered   { ...props }/>;
 Icon.ListUnordered = props => <ListUnordered { ...props }/>;
 
+Icon.Image = props => <Image { ...props }/>;
 Icon.Table = props => <Table { ...props }/>;
+
+Icon.Brush   = props => <Brush   { ...props }/>;
+Icon.Printer = props => <Printer { ...props }/>;
 
 
 export default Icon;

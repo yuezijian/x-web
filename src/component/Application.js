@@ -14,13 +14,13 @@ import Navigation from './Navigation';
 
 import client from '../client';
 
-import Grid from './layout/Grid';
+import Grid from './control/Grid';
 
 import XEditor from './XEditor';
 import XView   from './XView';
 import Example from './Example';
 import ORM     from './x-data/ORM';
-import PG_Show from './PG_Show';
+import PGS from './PGS';
 
 
 class Application extends React.Component
@@ -49,7 +49,7 @@ class Application extends React.Component
                           <XView/>
                         </Route>
                         <Route path='/his3'>
-                          <PG_Show/>
+                          <PGS/>
                         </Route>
                         <Route path='/x-data/orm'>
                           <ORM/>

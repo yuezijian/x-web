@@ -5,11 +5,11 @@ import React, { useEffect, useState } from 'react';
 import XQuery from './XQuery';
 
 // import scene from './x-data/scene';
-import Table from "./control/Table";
-import List from "./control/List";
-import Grid from "./layout/Grid";
-import Button from "./control/Button";
-import Collapse from "./control/Collapse";
+
+import Collapse from './control/Collapse';
+import Table from './control/Table';
+import List from './control/List';
+import Grid from './control/Grid';
 
 
 const request =
@@ -79,7 +79,7 @@ function TheView(props)
 {
   const [ domain,  SetDomain  ] = useState({ projects:   [] });
   const [ project, SetProject ] = useState({ entities:   [] });
-  const [ entity,  SetEntity  ] = useState({ properties: [] });
+  // const [ entity,  SetEntity  ] = useState({ properties: [] });
 
   useEffect(() => SetProject({ entities: [] }), [domain]);
 
@@ -101,22 +101,22 @@ function TheView(props)
       active: value => value.id === project.id
     };
 
-  const item_entity = (value, index) =>
-  {
-    const button =
-
-      <Button.Dark key={ index } click={ () => SetEntity(value) } layout={ 'mr-1 mt-1' } active={ entity.id === value.id } small outline>
-        {
-          value.name
-        }
-        {
-          value.note ? `[${ value.note }]` : null
-        }
-      </Button.Dark>
-    ;
-
-    return button;
-  };
+  // const item_entity = (value, index) =>
+  // {
+  //   const button =
+  //
+  //     <Button.Dark key={ index } click={ () => SetEntity(value) } layout={ 'mr-1 mt-1' } active={ entity.id === value.id } small outline>
+  //       {
+  //         value.name
+  //       }
+  //       {
+  //         value.note ? `[${ value.note }]` : null
+  //       }
+  //     </Button.Dark>
+  //   ;
+  //
+  //   return button;
+  // };
 
   const item_entity_card = (value, index) =>
   {
@@ -170,7 +170,7 @@ function TheView(props)
 }
 
 
-function PG_Show()
+function PGS()
 {
   const element =
 
@@ -191,4 +191,4 @@ function PG_Show()
 }
 
 
-export default PG_Show;
+export default PGS;

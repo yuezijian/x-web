@@ -1,6 +1,6 @@
 import React from 'react';
 
-import layout from '../layout/Layout';
+import utility from './Utility';
 
 
 function Tab(props)
@@ -35,7 +35,7 @@ Tab.Content = function ({ children, ...props})
 {
   let style = 'tab-content';
 
-  style += layout(props);
+  style += utility(props);
 
   return <div className={ style }>{ children }</div>;
 };

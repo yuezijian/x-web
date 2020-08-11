@@ -22,22 +22,35 @@ Block.toggle = function (editor, format)
 {
   const active = Block.is_active(editor, format);
 
-  const isList = LIST_TYPES.includes(format)
+  const isList = LIST_TYPES.includes(format);
 
-  Transforms.unwrapNodes(editor, {
-    match: n => LIST_TYPES.includes(n.type),
-    split: true,
-  })
+  {
+    const options =
+      {
+        match: n =>
+        {
+          console.log(n);
 
-  Transforms.setNodes(editor, {
-    type: active ? 'paragraph' : isList ? 'li' : format,
-  })
+          return LIST_TYPES.includes(n.type);
+        },
+
+        split: true
+      };
+
+    Transforms.unwrapNodes(editor, options);
+  }
+  {
+    const options =
+      {
+        type: active ? 'p' : isList ? 'li' : format
+      };
+
+    Transforms.setNodes(editor, options);
+  }
 
   if (!active && isList)
   {
-    const block = { type: format, children: [] };
-
-    Transforms.wrapNodes(editor, block)
+    Transforms.wrapNodes(editor, { type: format, children: [] })
   }
 };
 

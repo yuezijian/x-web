@@ -1,6 +1,6 @@
 import React from 'react';
 
-import layout from '../layout/Layout';
+import utility from './Utility';
 
 
 function Form({ inline, children, ...props })
@@ -53,7 +53,7 @@ Form.Control.Label = function ({ text, ...props })
 {
   let style = '';
 
-  style += layout(props);
+  style += utility(props);
 
   return <label className={ style }>{ text }</label>;
 }
@@ -62,7 +62,7 @@ Form.Control.Input = function ({ change, ...props })
 {
   let style = 'form-control';
 
-  style += layout(props);
+  style += utility(props);
 
   const element =
     <
@@ -81,7 +81,7 @@ Form.Control.Textarea = function ({ on_change, ...props })
 {
   let style = 'form-control';
 
-  style += layout(props);
+  style += utility(props);
 
   const element =
     <

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import layout from '../layout/Layout';
+import utility from './Utility';
 
 
 function Button({ type, outline, small, click, active, children, ...props })
@@ -12,7 +12,7 @@ function Button({ type, outline, small, click, active, children, ...props })
   style +=  ` btn-${ outline ? 'outline-' : '' }${ type }`;
   style += small ? ' btn-sm' : '';
   style += active ? ' active' : '';
-  style += layout(props);
+  style += utility(props);
 
   const element =
 

@@ -9,17 +9,17 @@ import Block from './block';
 import Mark  from './mark';
 
 
-const Tool = ({ target, format, icon }) =>
+const Tool = ({ unit, format, icon }) =>
 {
   const editor = useSlate();
 
-  const active = target.is_active(editor, format);
+  const active = unit.is_active(editor, format);
 
   const click = event =>
   {
     event.preventDefault();
 
-    target.toggle(editor, format);
+    unit.toggle(editor, format);
   };
 
   return <Button active={ active } click={ click } outline>{ icon }</Button>;
@@ -37,17 +37,22 @@ function Toolbar()
 
     <Button.Group>
 
-      <Tool target={ Mark } format='bold'      icon=<Icon.Bold     />/>
-      <Tool target={ Mark } format='italic'    icon=<Icon.Italic   />/>
-      <Tool target={ Mark } format='underline' icon=<Icon.Underline/>/>
+      <Tool unit={ Mark } format='bold'      icon=<Icon.Bold     />/>
+      <Tool unit={ Mark } format='italic'    icon=<Icon.Italic   />/>
+      <Tool unit={ Mark } format='underline' icon=<Icon.Underline/>/>
 
-      <Tool target={ Block } format='h1' icon=<Icon.H1           />/>
-      <Tool target={ Block } format='h2' icon=<Icon.H2           />/>
-      <Tool target={ Block } format='ol' icon=<Icon.ListOrdered  />/>
-      <Tool target={ Block } format='ul' icon=<Icon.ListUnordered/>/>
+      <Tool unit={ Block } format='h1' icon=<Icon.H1           />/>
+      <Tool unit={ Block } format='h2' icon=<Icon.H2           />/>
+      <Tool unit={ Block } format='ol' icon=<Icon.ListOrdered  />/>
+      <Tool unit={ Block } format='ul' icon=<Icon.ListUnordered/>/>
 
-      <Tool.Null icon=<Icon.ListCheck/>/>
+      <Tool unit={ Block } format='image' icon=<Icon.Image/>/>
+
       <Tool.Null icon=<Icon.Table/>/>
+
+      <Tool unit={ Mark } format='color' icon=<Icon.Brush/>/>
+
+      <Tool.Null icon=<Icon.Printer/>/>
 
     </Button.Group>
   ;

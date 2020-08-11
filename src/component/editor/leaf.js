@@ -18,6 +18,11 @@ function Leaf({ attributes, children, leaf })
     children = <u>{ children }</u>
   }
 
+  if (leaf.color)
+  {
+    children = <span style={ { color: leaf.color } }>{ children }</span>
+  }
+
   return <span { ...attributes }>{ children }</span>
 }
 
