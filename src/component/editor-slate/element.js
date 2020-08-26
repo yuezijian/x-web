@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 
 import Grid from '../control/Grid';
 
@@ -129,7 +129,7 @@ function render_image(attributes, children, element)
 
     <div { ...attributes }>
       <div contentEditable={ false }>
-        <img src={ element.url } alt='image' style={ { maxWidth: '100%' } }/>
+        <img className='rounded mx-auto d-block' src={ element.url } alt='image' style={ { maxWidth: '100%' } }/>
       </div>
     </div>
   ;
@@ -185,6 +185,21 @@ function render_td(attributes, children, element)
   return <td className={ style } { ...attributes } { ...properties }>{ children }</td>;
 }
 
+
+const style =
+  {
+    minWidth: '210mm',
+    maxWidth: '210mm',
+
+    minHeight: '297mm',
+    maxHeight: '297mm',
+
+    backgroundColor: '#ffffff'
+  };
+
+
+Register('paper', (attributes, children, element) => <div className='m-3' style={ style } { ...attributes }>{ children }</div>);
+
 Register('grid',   (attributes, children, element) => <div className='container fluid py-4' { ...attributes }>{ children }</div>);
 Register('row',    (attributes, children, element) => <div className='row'       { ...attributes }>{ children }</div>);
 Register('column', render_column);
@@ -218,9 +233,11 @@ Register('td', render_td);
 
 function Element({ attributes, children, element })
 {
+  const reference = useRef();
+
   const implement = Element.Type[element.type];
 
-  return implement ? implement(attributes, children, element) : <span { ...attributes }>{ children }</span>;
+  return implement ? implement(attributes, children, element, reference) : <span ref={ reference } { ...attributes }>{ children }</span>;
 }
 
 

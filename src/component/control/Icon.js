@@ -17,6 +17,9 @@ import { ReactComponent as Table } from 'bootstrap-icons/icons/table.svg';
 import { ReactComponent as Brush   } from 'bootstrap-icons/icons/brush.svg';
 import { ReactComponent as Printer } from 'bootstrap-icons/icons/printer.svg';
 
+import { ReactComponent as ToggleOn  } from 'bootstrap-icons/icons/toggle-on.svg';
+import { ReactComponent as ToggleOff } from 'bootstrap-icons/icons/toggle-off.svg';
+
 
 function Icon()
 {
@@ -39,6 +42,9 @@ Icon.Table = props => <Table { ...props }/>;
 
 Icon.Brush   = props => <Brush   { ...props }/>;
 Icon.Printer = props => <Printer { ...props }/>;
+
+Icon.ToggleOn  = props => <ToggleOn  { ...props }/>;
+Icon.ToggleOff = props => <ToggleOff { ...props }/>;
 
 
 export default Icon;

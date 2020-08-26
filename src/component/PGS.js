@@ -151,7 +151,7 @@ function TheView(props)
           <List data={ props.domains } element={ item_domain } horizontal/>
         </Grid.Column>
       </Grid.Row>
-      <Grid.Row layout='mt-2'>
+      <Grid.Row margin={ { top: 2 } }>
         <Grid.Column size={ 3 }>
           <List data={ domain.projects } element={ item_project }/>
         </Grid.Column>

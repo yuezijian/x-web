@@ -12,6 +12,7 @@ function Button({ type, outline, small, click, active, children, ...props })
   style +=  ` btn-${ outline ? 'outline-' : '' }${ type }`;
   style += small ? ' btn-sm' : '';
   style += active ? ' active' : '';
+
   style += utility(props);
 
   const element =
@@ -25,24 +26,6 @@ function Button({ type, outline, small, click, active, children, ...props })
 
   return element;
 }
-
-Button.Group = function ({ small, children, ...props })
-{
-  let style = 'btn-group';
-
-  style += small ? ' btn-group-sm' : '';
-
-  const element =
-
-    <div className={ style } role='group'>
-      {
-        children
-      }
-    </div>
-  ;
-
-  return element;
-};
 
 Button.Type =
   {

@@ -102,12 +102,12 @@ function View(props)
   const element =
 
     <div className='mx-3'>
-      <Grid.Row layout='mt-3'>
+      <Grid.Row margin={ { top: 3 } }>
         <Grid.Column>
           <Button outline>新实体</Button>
         </Grid.Column>
       </Grid.Row>
-      <Grid.Row layout='mt-3'>
+      <Grid.Row margin={ { top: 3 } }>
         <Grid.Column>
           <List data={ props.entities } element={ item_entity }/>
         </Grid.Column>
@@ -117,7 +117,7 @@ function View(props)
             <Tab.Link to='#property'   >属性</Tab.Link>
             <Tab.Link to='#association'>关系</Tab.Link>
           </Tab>
-          <Tab.Content layout='mt-4'>
+          <Tab.Content margin={ { top: 4 } }>
             <Tab.Panel id='information' show>
               <Entity key={ entity.id } data={ entity }/>
             </Tab.Panel>
