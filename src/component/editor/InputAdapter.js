@@ -7,12 +7,44 @@ class InputAdapter
     this.editor = editor;
   }
 
+  key_down(event)
+  {
+    if (event.code === 'ArrowLeft')
+    {
+      if (!this.ime)
+      {
+        this.editor.caret_move_left();
+      }
+
+      return;
+    }
+
+    if (event.code === 'ArrowRight')
+    {
+      if (!this.ime)
+      {
+        this.editor.caret_move_right();
+      }
+
+      return;
+    }
+
+    if (event.code === 'Enter')
+    {
+      if (!this.ime)
+      {
+        this.editor.insert('\n');
+      }
+    }
+  }
+
+  key_up(event)
+  {
+  }
+
   input(event)
   {
-    if (this.ime)
-    {
-    }
-    else
+    if (!this.ime)
     {
       if (event.inputType === 'insertText')
       {

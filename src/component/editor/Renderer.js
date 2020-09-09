@@ -4,8 +4,10 @@ class Renderer
   {
     this.device = canvas.getContext('2d');
 
-    this.device.font         = '20px sans-serif';
+    this.device.font         = '32px courier';
     this.device.textBaseline = 'bottom';
+
+    // this.device.scale(8, 8);
   }
 
   clear(color, { width, height })
@@ -28,11 +30,11 @@ class Renderer
     this.device.fillRect(x, y, width, height);
   }
 
-  draw_text(text, x, y, color)
+  draw_text(text, x, baseline, color)
   {
     this.device.fillStyle = color;
 
-    this.device.fillText(text, x, y);
+    this.device.fillText(text, x, baseline);
   }
 
   measure(text)

@@ -1,35 +1,147 @@
 import Rectangle from './Rectangle';
 import Renderer  from './Renderer';
+import Context from "./Context";
 
+
+function string_insert(string, position, value)
+{
+  return string.substring(0, position) + value + string.substring(position);
+}
 
 function bounding_by_context(context)
 {
-  const left   = context.left;
-  const right  = context.left;
-  const top    = context.baseline - context.font.height;
-  const bottom = context.baseline;
+  const left   = context.bounding.left;
+  const right  = context.bounding.left;
+  const top    = context.caret.baseline - context.font.height;
+  const bottom = context.caret.baseline;
 
   return new Rectangle(left, right, top, bottom);
 }
 
-function context_can_expand(context, width)
+function caret_rectangle_by_context(context, rectangle)
 {
-  // 未来会加入方向判定
-
-  // console.log(context.x, width, context.right);
-
-  return context.x + width <= context.right;
+  rectangle.left   = context.caret.x;
+  rectangle.right  = context.caret.x + 2;
+  rectangle.top    = context.caret.baseline - context.font.height - 2;
+  rectangle.bottom = context.caret.baseline - 2;
 }
 
-function context_new_line(context)
+function caret_draw(context, renderer, rectangle)
 {
-  context.x = context.left;
-  context.baseline += context.font.height * 1.5;
+  // 计算光标位置
+  caret_rectangle_by_context(context, rectangle);
+
+  // 绘制光标
+  renderer.draw_rectangle(rectangle, '#000000');
 }
 
-function context_move(context, width)
+
+function document_get_object(document, context)
 {
-  context.x += width;
+  return document[context.caret.path[0]];
+}
+
+function document_object_backward(document, context)
+{
+  const n = context.caret.path[0] - 1;
+
+  const object = document[n];
+
+  context.caret.path[0] = n;
+  context.caret.path[1] = object.text.length;
+
+  context.caret.x        = object.bounding.right;  // 后期加入方向
+  context.caret.baseline = object.baseline;
+}
+
+function document_object_forward(document, context)
+{
+  const n = context.caret.path[0] + 1;
+
+  const object = document[n];
+
+  context.caret.path[0] = n;
+  context.caret.path[1] = 0;
+
+  context.caret.x        = object.bounding.left;  // 后期加入方向
+  context.caret.baseline = object.baseline;
+}
+
+// function document_object_backward_jump_break(document, context)
+// {
+//   const object = document[context.caret.path[0]];
+//
+//   if (object.text[object.text.length - 1] === '\n')
+//   {
+//     context.caret.path[1] -= 1;
+//   }
+// }
+
+// function document_object_forward_jump_break(document, context)
+// {
+//   const object = document[context.caret.path[0]];
+//
+//   if (object.text[context.caret.path[1] + 1] === '\n')
+//   {
+//     context.caret.path[1] += 1;
+//   }
+// }
+
+
+function document_insert_break(context, document)
+{
+  const object = document[context.caret.path[0]];
+
+  // 使用 context.caret.path[1] 进行 insert
+
+  // 目前只是简单追加
+  // object.text += '\n';
+
+  object.newline = true;
+
+  // context.caret.path[1] += 1;
+}
+
+function document_add_object(context, document)
+{
+  const object =
+    {
+      text:     '',
+      baseline: context.caret.baseline,
+      bounding: bounding_by_context(context),
+      newline:  false
+    };
+
+  document.push(object);
+}
+
+function document_insert_character(context, document, character, width)
+{
+  // 得到光标所在的对象
+  const object = document[context.caret.path[0]];
+
+  // 得到光标在当前对象字符中的位置
+  const offset = context.caret.path[1];
+
+  if (object.text.length === offset)
+  {
+    // 直接追加
+    object.text += character;
+  }
+  else
+  {
+    // 根据 context.caret.path[1] 得到需要插入的位置
+    object.text = string_insert(object.text, offset, character);
+  }
+
+  // 可能会扩展边界盒，可能不会，只是把末尾字符顶到下一个对象
+  object.bounding.extend_right(width);
+
+  // 光标位置变化
+  context.caret.path[1] = offset + 1;
+
+  // 并影响后续所有的行
+  ;
 }
 
 
@@ -39,117 +151,192 @@ class Editor
   {
     console.log('Editor constructor');
 
+    this.background = '#f0f0f0';
+
     this.renderer = null;
 
     this.size = null;
 
-    // 这是原始文本（未来会是原始节点）
-    this.buffer = '这是一个测试这是一个测试这是一个测试这是一个测试这是一个测试';
-    // this.buffer = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz';
+    this.document = null;
 
-    // 原始文本通过计算会形成绘制用数据结构
-
-    // 目前的结构会比较简单，有一个边界，有若干文本（，有相关字体信息）
-
-    this.bounding_rows = null;
+    this.caret = null;
   }
 
   attach(canvas)
   {
-    this.size = { width: canvas.width, height: canvas.height };
+    canvas.style.cursor = 'text';
 
-    this.left  = 0;
-    this.right = this.size.width;
+    this.size = { width: canvas.width, height: canvas.height };
 
     this.renderer = new Renderer(canvas);
 
-    this.render();  // 完成第一次渲染
+    this.caret = new Rectangle(0, 0, 0, 0);
+
+    // 测试
+
+    this.renderer.clear(this.background, this.size);
+
+    this.context = new Context();
+
+    this.context.reset(this.size);
+
+    this.document = [];
+
+    // 至少有一行
+    document_add_object(this.context, this.document);
+
+    // 测试
+    //
+    const texts = 'HTML5 Canvas 文档编辑器\n\n这是一段文本测试，文字会在边界处换行，目前 English 不支持整单词换行。\n\n按下 Enter 也会换行，现在需要做的，是上下左右移动光标。';
+
+    this.insert(texts);
+    //
+    // 测试
+
+    this.render();
   }
 
   render()
   {
-    this.renderer.clear('#eeeeee', this.size);  // canvas 是一个增量绘制，所以这一行的逻辑未来应该不需要
+    // 目前使用传统的绘制流程
+    // 如果后期遇到性能问题（不太可能），再优化
 
-    this.row = 0;  // 这两者包含了光标位置概念
+    // 全部擦除
 
-    this.context =
-      {
-        font:
-          {
-            family: '',
-
-            height: 20
-          },
-
-        left:  0,
-        right: this.size.width,
-
-        x: 0
-      };
-
-    this.context.baseline = this.context.font.height;
-
-    this.primitives =
-      [
-        // 至少存在第一行对象
-        {
-          text:     '',
-          bounding: bounding_by_context(this.context)
-        }
-      ];
-
-    // 纯计算步骤
-    //
-    // 逐字符测量宽度，得到边界，和相关文本，组成一个小图元对象，加入容器
-
-    for (const character of this.buffer)
-    {
-      const width = this.renderer.measure(character);
-
-      if (!context_can_expand(this.context, width))
-      {
-        // 首先切换到下一行
-        context_new_line(this.context);
-
-        // 产生新的边界
-        const bounding = bounding_by_context(this.context);
-
-        this.primitives.push({ text: '', bounding });
-
-        // 当前光标位置改变
-        this.row += 1;
-      }
-
-      // 添加新文本
-      this.primitives[this.row].text += character;
-
-      // 扩展当前边界
-      this.primitives[this.row].bounding.extend_right(width);
-
-      // 新的光标位置
-      context_move(this.context, width);
-    }
+    this.renderer.clear(this.background, this.size);
 
     // 设置 viewport 等
     //
     // 移动（滚动），缩放
 
-    // 绘制所有的内容
+    // 绘制 document
 
-    for (const object of this.primitives)
+    for (const object of this.document)
     {
-      this.renderer.draw_rectangle(object.bounding, '#acacac');
-      this.renderer.draw_text(object.text, object.bounding.x(), object.bounding.bottom, '#000000');
+      this.renderer.draw_text(object.text, object.bounding.left, object.baseline, '#000000');
     }
+
+    // 绘制 光标
+
+    caret_draw(this.context, this.renderer, this.caret);
   }
 
   insert(text)
   {
-    // 根据当前状态，直接绘制变化量
+    for (const character of text)
+    {
+      if (character === '\n')
+      {
+        document_insert_break(this.context, this.document);
 
-    this.buffer += text;
+        // 然后切换到下一行
+        this.context.break_line();
 
-    this.render();  // 而不是全部渲染
+        // 产生新的对象
+        document_add_object(this.context, this.document);
+      }
+      else
+      {
+        const width = this.renderer.measure(character);
+
+        // 根据当前光标位置向输入方向判断
+
+        if (!this.context.is_overstep(width))
+        {
+          // 首先切换到下一行
+          this.context.break_line();
+
+          // 产生新的对象
+
+          // todo 或者拆分过去的旧对象
+
+          document_add_object(this.context, this.document);
+        }
+
+        // 这句可能会影响多行绘制
+
+        document_insert_character(this.context, this.document, character, width);
+
+        this.context.caret_move(width);
+      }
+    }
+
+    this.render();
+  }
+
+  caret_move_left()
+  {
+    const path = [ ... this.context.caret.path ];
+
+    if (path[0] === 0 && path[1] === 0) // 整篇文章的头
+    {
+      return;
+    }
+
+    if (path[1] === 0)  // 到了这一行的头了
+    {
+      // 移动到上一个行对象
+      document_object_backward(this.document, this.context);
+
+      // 跳过换行，如果有的话
+      // document_object_backward_jump_break(this.document, this.context);
+    }
+    else
+    {
+      path[1] -= 1;
+
+      const object = document_get_object(this.document, this.context);
+
+      const character = object.text[path[1]];
+
+      const width = this.renderer.measure(character);
+
+      this.context.caret.path[1] = path[1];
+
+      this.context.caret_move(-width);  // 方向
+    }
+
+    this.render();
+  }
+
+  caret_move_right()
+  {
+    let object = document_get_object(this.document, this.context);
+
+    const path = [ ... this.context.caret.path ];
+
+    if (path[0] >= this.document.length - 1 && path[1] >= object.text.length) // 整篇文章的末尾
+    {
+      return;
+    }
+
+    if (path[1] <= object.text.length - 1)
+    {
+      let character = object.text[path[1]];
+
+      const width = this.renderer.measure(character);
+
+      this.context.caret.path[1] += 1;
+
+      this.context.caret_move(width);  // 方向
+    }
+    else
+    {
+      // 移动到下一个行对象
+
+      document_object_forward(this.document, this.context);
+    }
+
+    this.render();
+  }
+
+  caret_move_top()
+  {
+  }
+
+  caret_move_bottom()
+  {
+    ;
   }
 }
 

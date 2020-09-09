@@ -193,8 +193,8 @@ function XEditor()
         input
         type                = 'text'
         style               = { { opacity: 0.2 } }
-        // onKeyDown           = { event => editor.handle_keydown(event.nativeEvent) }
-        // onKeyUp             = { event => console.log(event) }
+        onKeyDown           = { event => adapter.key_down(event.nativeEvent) }
+        onKeyUp             = { event => adapter.key_up(event.nativeEvent) }
         onInput             = { event => adapter.input(event.nativeEvent) }
         onPaste             = { event => adapter.paste(event.nativeEvent) }
         onCompositionStart  = { event => adapter.composition_start(event.nativeEvent) }
@@ -206,9 +206,10 @@ function XEditor()
       <
         canvas
         ref         = { reference }
-        width       = { size.width  }
-        height      = { size.height }
         tabIndex    = { '0' }
+        style       = { { width: size.width, height: size.height } }
+        width       = { size.width  * 2 }
+        height      = { size.height * 2 }
         // onMouseMove = { event => console.log(event.nativeEvent) }
         // onMouseDown = { event => editor.handle(event.nativeEvent) }
         // onMouseUp   = { event => console.log(event.nativeEvent) }
