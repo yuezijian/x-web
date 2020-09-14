@@ -1,6 +1,8 @@
+import Context from "./Context";
 import Rectangle from './Rectangle';
 import Renderer  from './Renderer';
-import Context from "./Context";
+
+import Text from './Text';
 
 
 function string_insert(string, position, value)
@@ -67,26 +69,6 @@ function document_object_forward(document, context)
   context.caret.baseline = object.baseline;
 }
 
-// function document_object_backward_jump_break(document, context)
-// {
-//   const object = document[context.caret.path[0]];
-//
-//   if (object.text[object.text.length - 1] === '\n')
-//   {
-//     context.caret.path[1] -= 1;
-//   }
-// }
-
-// function document_object_forward_jump_break(document, context)
-// {
-//   const object = document[context.caret.path[0]];
-//
-//   if (object.text[context.caret.path[1] + 1] === '\n')
-//   {
-//     context.caret.path[1] += 1;
-//   }
-// }
-
 
 function document_insert_break(context, document)
 {
@@ -113,36 +95,361 @@ function document_add_object(context, document)
     };
 
   document.push(object);
+
+  return object;
 }
 
-function document_insert_character(context, document, character, width)
+// 这个函数对某个对象进行插入操作，但是只影响当前行，并把剩余的内容返回出来
+
+function document_object_push_tail(document, renderer, context, text, mc)
 {
-  // 得到光标所在的对象
-  const object = document[context.caret.path[0]];
+  const object = document[context.caret.path[0]];  // 得到光标所在的对象
 
   // 得到光标在当前对象字符中的位置
+
   const offset = context.caret.path[1];
+
+  let t_left  = null;
+  let t_right = null;
 
   if (object.text.length === offset)
   {
-    // 直接追加
-    object.text += character;
+    // 末尾追加
+
+    t_left  = object.text;
+    t_right = text;
   }
   else
   {
-    // 根据 context.caret.path[1] 得到需要插入的位置
-    object.text = string_insert(object.text, offset, character);
+    // 插入
+
+    t_left  = object.text.slice(0, offset);
+    t_right = text + object.text.slice(offset);
   }
 
-  // 可能会扩展边界盒，可能不会，只是把末尾字符顶到下一个对象
-  object.bounding.extend_right(width);
+  // 首先得到插入位置左侧的宽度
 
-  // 光标位置变化
-  context.caret.path[1] = offset + 1;
+  let width = 0;
 
-  // 并影响后续所有的行
-  ;
+  for (let i = 0; i < offset; ++i)
+  {
+    width += renderer.measure(object.text[i]);
+  }
+
+  const length = t_right.length;
+
+  let index = 0;
+
+  while (index < length)
+  {
+    const w = renderer.measure(t_right[index]);
+
+    if (width + w <= context.bounding.width())
+    {
+      index += 1;
+      width += w;
+
+      mc(w);
+
+      continue;
+    }
+
+    break;
+  }
+
+  object.text = t_left + t_right.slice(0, index);
+
+  object.bounding.right = object.bounding.left + width;
+
+  let remaining = t_right.slice(index);
+
+  // if (object.newline)
+  // {
+  //   remaining += '\n';
+  //
+  //   object.newline = false;
+  // }
+
+  return remaining;
 }
+
+// function document_object_insert_text(context, object, text)
+// {
+//   // 得到光标在当前对象字符中的位置
+//
+//   const offset = context.caret.path[1];
+//
+//   // 追加或直接插入
+//
+//   if (object.text.length === offset)
+//   {
+//     object.text += text;
+//   }
+//   else
+//   {
+//     object.text = string_insert(object.text, offset, text);
+//   }
+// }
+
+
+
+// class Editor
+// {
+//   constructor()
+//   {
+//     console.log('Editor constructor');
+//
+//     this.background = '#f0f0f0';
+//
+//     this.renderer = null;
+//
+//     this.size = null;
+//
+//     this.document = null;
+//
+//     this.caret = null;
+//   }
+//
+//   attach(canvas)
+//   {
+//     canvas.style.cursor = 'text';
+//
+//     this.size = { width: canvas.width, height: canvas.height };
+//
+//     this.renderer = new Renderer(canvas);
+//
+//     this.caret = new Rectangle(0, 0, 0, 0);
+//
+//     // 测试
+//
+//     this.renderer.clear(this.background, this.size);
+//
+//     this.context = new Context();
+//
+//     this.context.reset(this.size);
+//
+//     this.document = [];
+//
+//     // 至少有一行
+//     document_add_object(this.context, this.document);
+//
+//     // 测试
+//     //
+//     // const texts = 'HTML5 Canvas 文档编辑器\n\n这是一段文本测试，文字会在边界处换行，目前 English 不支持整单词换行。\n\n按下 Enter 也会换行，现在需要做的，是上下左右移动光标。';
+//     // const texts = 'HTML5 Canva 文档编辑器。这是一段文本测试，文字会在边界处换行，目前 English 不支持整单词换行。按下 Enter 也会换行，现在需要做的，是上下左右移动光标。';
+//     const texts = 'HTML5 Canvas';
+//     // const texts = '1234567890 1234567890 1234567890 1234567890';
+//
+//     this.insert(texts);
+//     //
+//     // 测试
+//
+//     this.render();
+//   }
+//
+//   render()
+//   {
+//     // 目前使用传统的绘制流程
+//     // 如果后期遇到性能问题（基本上不可能），再优化
+//
+//     // 全部擦除
+//
+//     this.renderer.clear(this.background, this.size);
+//
+//     // 设置 viewport 等
+//     //
+//     // 移动（滚动），缩放
+//
+//     // 绘制 document
+//
+//     for (const object of this.document)
+//     {
+//       this.renderer.draw_text(object.text, object.bounding.left, object.baseline, '#000000');
+//     }
+//
+//     // 绘制 光标
+//
+//     caret_draw(this.context, this.renderer, this.caret);
+//   }
+//
+//   // insert(text)
+//   // {
+//   //   for (const character of text)
+//   //   {
+//   //     if (character === '\n')
+//   //     {
+//   //       document_insert_break(this.context, this.document);
+//   //
+//   //       // 然后切换到下一行
+//   //       this.context.newline();
+//   //
+//   //       // 产生新的对象
+//   //       document_add_object(this.context, this.document);
+//   //     }
+//   //     else
+//   //     {
+//   //       // 因为新增了插入行为
+//   //       // 这里的逻辑变成了
+//   //       //
+//   //       // 总是判断当前行宽度，和上下文环境宽度
+//   //
+//   //       const width = this.renderer.measure(character);
+//   //
+//   //       // 根据当前光标位置向输入方向判断
+//   //
+//   //       if (!this.context.is_overstep(width))
+//   //       {
+//   //         // 首先切换到下一行
+//   //         this.context.newline();
+//   //
+//   //         // 产生新的对象
+//   //
+//   //         document_add_object(this.context, this.document);
+//   //       }
+//   //
+//   //       document_insert_character(this.renderer, this.context, this.document, character, width);
+//   //
+//   //       this.context.caret_move(width);
+//   //     }
+//   //   }
+//   //
+//   //   this.render();
+//   // }
+//
+//   insert(text)
+//   {
+//     let step = 0;
+//
+//     const move_caret = (width) =>
+//     {
+//       // 光标需要移动的总数就是 text.length
+//
+//       if (step < text.length)
+//       {
+//         step += 1;
+//
+//         this.context.caret.path[1] += 1;
+//         this.context.caret_move(width);
+//       }
+//     };
+//
+//     //
+//     let remaining = text;
+//
+//     while (this.context.caret.path[0] < this.document.length)
+//     {
+//       remaining = document_object_push_tail(this.document, this.renderer, this.context, remaining, move_caret);
+//
+//       // 这里要综合判断一下，光标需要移动的总数就是 text.length
+//
+//       // 这里挤出了多少，表示光标移动了多少
+//
+//       if (remaining !== '')
+//       {
+//         this.context.newline();
+//
+//         continue;
+//       }
+//
+//       break;
+//     }
+//
+//     if (remaining !== '')
+//     {
+//       document_add_object(this.context, this.document);
+//
+//       while (true)
+//       {
+//         remaining = document_object_push_tail(this.document, this.renderer, this.context, remaining, move_caret);
+//
+//         if (remaining !== '')
+//         {
+//           this.context.newline();
+//
+//           document_add_object(this.context, this.document);
+//
+//           continue;
+//         }
+//
+//         break;
+//       }
+//     }
+//
+//     this.render();
+//   }
+//
+//   caret_move_left()
+//   {
+//     const path = [ ... this.context.caret.path ];
+//
+//     if (path[0] === 0 && path[1] === 0) // 整篇文章的头
+//     {
+//       return;
+//     }
+//
+//     if (path[1] === 0)  // 到了这一行的头了
+//     {
+//       // 移动到上一个行对象
+//       document_object_backward(this.document, this.context);
+//     }
+//     else
+//     {
+//       path[1] -= 1;
+//
+//       const object = document_get_object(this.document, this.context);
+//
+//       const character = object.text[path[1]];
+//
+//       const width = this.renderer.measure(character);
+//
+//       this.context.caret.path[1] = path[1];
+//
+//       this.context.caret_move(-width);  // 方向
+//     }
+//
+//     this.render();
+//   }
+//
+//   caret_move_right()
+//   {
+//     let object = document_get_object(this.document, this.context);
+//
+//     const path = [ ... this.context.caret.path ];
+//
+//     if (path[0] >= this.document.length - 1 && path[1] >= object.text.length) // 整篇文章的末尾
+//     {
+//       return;
+//     }
+//
+//     if (path[1] <= object.text.length - 1)
+//     {
+//       let character = object.text[path[1]];
+//
+//       const width = this.renderer.measure(character);
+//
+//       this.context.caret.path[1] += 1;
+//
+//       this.context.caret_move(width);  // 方向
+//     }
+//     else
+//     {
+//       // 移动到下一个行对象
+//
+//       document_object_forward(this.document, this.context);
+//     }
+//
+//     this.render();
+//   }
+//
+//   caret_move_top()
+//   {
+//   }
+//
+//   caret_move_bottom()
+//   {
+//     ;
+//   }
+// }
 
 
 class Editor
@@ -159,7 +466,13 @@ class Editor
 
     this.document = null;
 
-    this.caret = null;
+    // 这是全局的元素
+
+    this.selection =
+      {
+        anchor: 0,
+        focus:  0
+      }
   }
 
   attach(canvas)
@@ -176,158 +489,40 @@ class Editor
 
     this.renderer.clear(this.background, this.size);
 
-    this.context = new Context();
+    this.document = new Text();
 
-    this.context.reset(this.size);
+    this.document.set({ baseline: 32, font: { family: 'courier', height: 32 }, color: '#ff0000' });
 
-    this.document = [];
+    this.document.insert('这是一个测试');
 
-    // 至少有一行
-    document_add_object(this.context, this.document);
-
-    // 测试
-    //
-    const texts = 'HTML5 Canvas 文档编辑器\n\n这是一段文本测试，文字会在边界处换行，目前 English 不支持整单词换行。\n\n按下 Enter 也会换行，现在需要做的，是上下左右移动光标。';
-
-    this.insert(texts);
-    //
-    // 测试
+    const caret = this.document.caret();
 
     this.render();
   }
 
   render()
   {
-    // 目前使用传统的绘制流程
-    // 如果后期遇到性能问题（不太可能），再优化
-
-    // 全部擦除
-
     this.renderer.clear(this.background, this.size);
 
-    // 设置 viewport 等
-    //
-    // 移动（滚动），缩放
-
-    // 绘制 document
-
-    for (const object of this.document)
-    {
-      this.renderer.draw_text(object.text, object.bounding.left, object.baseline, '#000000');
-    }
+    this.document.draw(this.renderer);
 
     // 绘制 光标
-
-    caret_draw(this.context, this.renderer, this.caret);
+    ;
   }
 
   insert(text)
   {
-    for (const character of text)
-    {
-      if (character === '\n')
-      {
-        document_insert_break(this.context, this.document);
-
-        // 然后切换到下一行
-        this.context.break_line();
-
-        // 产生新的对象
-        document_add_object(this.context, this.document);
-      }
-      else
-      {
-        const width = this.renderer.measure(character);
-
-        // 根据当前光标位置向输入方向判断
-
-        if (!this.context.is_overstep(width))
-        {
-          // 首先切换到下一行
-          this.context.break_line();
-
-          // 产生新的对象
-
-          // todo 或者拆分过去的旧对象
-
-          document_add_object(this.context, this.document);
-        }
-
-        // 这句可能会影响多行绘制
-
-        document_insert_character(this.context, this.document, character, width);
-
-        this.context.caret_move(width);
-      }
-    }
-
     this.render();
   }
 
   caret_move_left()
   {
-    const path = [ ... this.context.caret.path ];
-
-    if (path[0] === 0 && path[1] === 0) // 整篇文章的头
-    {
-      return;
-    }
-
-    if (path[1] === 0)  // 到了这一行的头了
-    {
-      // 移动到上一个行对象
-      document_object_backward(this.document, this.context);
-
-      // 跳过换行，如果有的话
-      // document_object_backward_jump_break(this.document, this.context);
-    }
-    else
-    {
-      path[1] -= 1;
-
-      const object = document_get_object(this.document, this.context);
-
-      const character = object.text[path[1]];
-
-      const width = this.renderer.measure(character);
-
-      this.context.caret.path[1] = path[1];
-
-      this.context.caret_move(-width);  // 方向
-    }
-
-    this.render();
+    this.document.caret().backward(1);
   }
 
   caret_move_right()
   {
-    let object = document_get_object(this.document, this.context);
-
-    const path = [ ... this.context.caret.path ];
-
-    if (path[0] >= this.document.length - 1 && path[1] >= object.text.length) // 整篇文章的末尾
-    {
-      return;
-    }
-
-    if (path[1] <= object.text.length - 1)
-    {
-      let character = object.text[path[1]];
-
-      const width = this.renderer.measure(character);
-
-      this.context.caret.path[1] += 1;
-
-      this.context.caret_move(width);  // 方向
-    }
-    else
-    {
-      // 移动到下一个行对象
-
-      document_object_forward(this.document, this.context);
-    }
-
-    this.render();
+    this.document.caret().forward(1);
   }
 
   caret_move_top()
@@ -336,7 +531,6 @@ class Editor
 
   caret_move_bottom()
   {
-    ;
   }
 }
 

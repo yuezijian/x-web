@@ -1,10 +1,14 @@
+import Rectangle from './Rectangle';
+
+
 class Context
 {
   constructor()
   {
-    this.font = {};
-    this.bounding = {};
+    this.font  = {};
     this.caret = {};
+
+    this.bounding = new Rectangle(0, 0, 0, 0);
   }
 
   reset(size)  // 临时传入 size
@@ -30,7 +34,7 @@ class Context
     return this.caret.x + width <= this.bounding.right;
   }
 
-  break_line()
+  newline()
   {
     this.caret.path[0] += 1;
     this.caret.path[1]  = 0;

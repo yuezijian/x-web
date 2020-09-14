@@ -4,10 +4,7 @@ class Renderer
   {
     this.device = canvas.getContext('2d');
 
-    this.device.font         = '32px courier';
-    this.device.textBaseline = 'bottom';
-
-    // this.device.scale(8, 8);
+    // this.device.textBaseline = 'bottom';
   }
 
   clear(color, { width, height })
@@ -30,9 +27,10 @@ class Renderer
     this.device.fillRect(x, y, width, height);
   }
 
-  draw_text(text, x, baseline, color)
+  draw_text(font, text, x, baseline, color)
   {
     this.device.fillStyle = color;
+    this.device.font      = `${ font.height }px ${ font.family}`;
 
     this.device.fillText(text, x, baseline);
   }
