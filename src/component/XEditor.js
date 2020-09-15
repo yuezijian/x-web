@@ -211,7 +211,7 @@ function XEditor()
         width       = { size.width  * 2 }
         height      = { size.height * 2 }
         // onMouseMove = { event => console.log(event.nativeEvent) }
-        // onMouseDown = { event => editor.handle(event.nativeEvent) }
+        onMouseDown = { event => adapter.mouse_down(event.nativeEvent) }
         // onMouseUp   = { event => console.log(event.nativeEvent) }
       />
     </div>

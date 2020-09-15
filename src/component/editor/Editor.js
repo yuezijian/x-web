@@ -1,3 +1,4 @@
+import Caret from './Caret';
 import Context from "./Context";
 import Rectangle from './Rectangle';
 import Renderer  from './Renderer';
@@ -465,14 +466,6 @@ class Editor
     this.size = null;
 
     this.document = null;
-
-    // 这是全局的元素
-
-    this.selection =
-      {
-        anchor: 0,
-        focus:  0
-      }
   }
 
   attach(canvas)
@@ -483,19 +476,17 @@ class Editor
 
     this.renderer = new Renderer(canvas);
 
-    this.caret = new Rectangle(0, 0, 0, 0);
-
     // 测试
 
     this.renderer.clear(this.background, this.size);
 
     this.document = new Text();
-
     this.document.set({ baseline: 32, font: { family: 'courier', height: 32 }, color: '#ff0000' });
 
-    this.document.insert('这是一个测试');
+    this.caret = new Caret(this.document);
 
-    const caret = this.document.caret();
+    // this.document.insert('这是一个 abcdefghijklmnopqrstuvwxyz 0123456789 ABCDEFGHIJKLMNOPQRSTUVWXYZ 测试');
+    this.insert('这是一个 测试');
 
     this.render();
   }
@@ -506,23 +497,39 @@ class Editor
 
     this.document.draw(this.renderer);
 
-    // 绘制 光标
-    ;
+    this.caret.draw(this.renderer);
   }
 
   insert(text)
   {
+    const caret = this.caret;
+
+    const { anchor, focus } = caret.selection();
+
+    let begin = anchor < focus ? anchor : focus;
+    let end   = anchor < focus ? focus  : anchor;
+
+    this.document.mutate(begin, end, text);
+
+    const position = begin + text.length;
+
+    caret.to({ anchor: position, focus: position });
+
     this.render();
   }
 
-  caret_move_left()
+  caret_move_left(hold_anchor)
   {
-    this.document.caret().backward(1);
+    this.caret.backward(1, hold_anchor);
+
+    this.render();
   }
 
-  caret_move_right()
+  caret_move_right(hold_anchor)
   {
-    this.document.caret().forward(1);
+    this.caret.forward(1, hold_anchor);
+
+    this.render();
   }
 
   caret_move_top()
@@ -531,6 +538,13 @@ class Editor
 
   caret_move_bottom()
   {
+  }
+
+  caret_jump(x, y)
+  {
+    this.caret.jump(this.renderer, x);
+
+    this.render();
   }
 }
 

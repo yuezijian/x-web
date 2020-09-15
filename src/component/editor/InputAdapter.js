@@ -2,6 +2,8 @@ class InputAdapter
 {
   constructor(editor)
   {
+    this.shift = false;
+
     this.ime = false;
 
     this.editor = editor;
@@ -9,27 +11,34 @@ class InputAdapter
 
   key_down(event)
   {
-    if (event.code === 'ArrowLeft')
+    const key = event.key;
+
+    if (key === 'Shift')
+    {
+      this.shift = true;
+    }
+
+    if (key === 'ArrowLeft')
     {
       if (!this.ime)
       {
-        this.editor.caret_move_left();
+        this.editor.caret_move_left(this.shift);
       }
 
       return;
     }
 
-    if (event.code === 'ArrowRight')
+    if (key === 'ArrowRight')
     {
       if (!this.ime)
       {
-        this.editor.caret_move_right();
+        this.editor.caret_move_right(this.shift);
       }
 
       return;
     }
 
-    if (event.code === 'Enter')
+    if (key === 'Enter')
     {
       if (!this.ime)
       {
@@ -40,6 +49,12 @@ class InputAdapter
 
   key_up(event)
   {
+    const key = event.key;
+
+    if (key === 'Shift')
+    {
+      this.shift = false;
+    }
   }
 
   input(event)
@@ -78,6 +93,11 @@ class InputAdapter
     this.ime = false;
 
     this.editor.insert(event.data);
+  }
+
+  mouse_down(event)
+  {
+    this.editor.caret_jump(event.offsetX * 2, event.offsetY * 2);
   }
 }
 

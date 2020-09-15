@@ -15,13 +15,20 @@ class Renderer
     this.device.fillRect(0, 0, width, height);
   }
 
-  draw_rectangle(rectangle, color)
-  {
-    const x      = rectangle.x();
-    const y      = rectangle.y();
-    const width  = rectangle.width();
-    const height = rectangle.height();
+  // draw_rectangle(rectangle, color)
+  // {
+  //   const x      = rectangle.x();
+  //   const y      = rectangle.y();
+  //   const width  = rectangle.width();
+  //   const height = rectangle.height();
+  //
+  //   this.device.fillStyle = color;
+  //
+  //   this.device.fillRect(x, y, width, height);
+  // }
 
+  draw_rectangle({ x, y, width, height }, color)
+  {
     this.device.fillStyle = color;
 
     this.device.fillRect(x, y, width, height);
