@@ -59,8 +59,10 @@ class Text
     return this._value.length;
   }
 
-  mutate(begin, end, text)
+  mutate(selection, text)
   {
+    const { begin, end } = selection;
+
     if (begin === end)
     {
       const offset = begin;
@@ -76,13 +78,45 @@ class Text
     }
     else
     {
-      this._value = this._value.substring(begin, end) + text + this._value.substring(end);
+      this._value = this._value.substring(0, begin) + text + this._value.substring(end);
     }
   }
 
-  draw(renderer)
+  draw(renderer, selection)
   {
     renderer.draw_text(this._font, this._value, this._x, this._baseline, this._color);
+
+    if (selection)
+    {
+      const { begin, end } = selection;
+
+      if (begin !== end)
+      {
+        renderer.draw_text(this._font, this._value, this._x, this._baseline, this._color);
+
+        let x = this._x;
+
+        for (let i = 0; i < begin; ++i)
+        {
+          x += renderer.measure(this._font, this._value[i]);
+        }
+
+        let width = 0;
+
+        for (let i = begin; i < end; ++i)
+        {
+          width += renderer.measure(this._font, this._value[i]);
+        }
+
+        const y = this._baseline - this._font.height + 4;
+
+        const height = this._font.height;
+
+        renderer.draw_rectangle({ x, y, width, height }, '#286fff');
+
+        renderer.draw_text(this._font, this._value.substring(begin, end), x, this._baseline, '#ffffff');
+      }
+    }
   }
 }
 

@@ -3,6 +3,7 @@ class InputAdapter
   constructor(editor)
   {
     this.shift = false;
+    this.button = false;
 
     this.ime = false;
 
@@ -12,6 +13,22 @@ class InputAdapter
   key_down(event)
   {
     const key = event.key;
+
+    if (key === 'Backspace')
+    {
+      if (!this.ime)
+      {
+        this.editor.delete_backward();
+      }
+    }
+
+    if (key === 'Delete')
+    {
+      if (!this.ime)
+      {
+        this.editor.delete_forward();
+      }
+    }
 
     if (key === 'Shift')
     {
@@ -97,7 +114,22 @@ class InputAdapter
 
   mouse_down(event)
   {
-    this.editor.caret_jump(event.offsetX * 2, event.offsetY * 2);
+    this.button = true;
+
+    this.editor.caret_jump(event.offsetX * 2, event.offsetY * 2, this.shift);
+  }
+
+  mouse_up(event)
+  {
+    this.button = false;
+  }
+
+  mouse_move(event)
+  {
+    if (this.button)
+    {
+      this.editor.caret_jump(event.offsetX * 2, event.offsetY * 2, this.button);
+    }
   }
 }
 

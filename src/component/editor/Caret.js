@@ -7,12 +7,6 @@ class Caret
     this._selection = { anchor: 0, focus: 0 };
   }
 
-  to({ anchor, focus })
-  {
-    this._selection.anchor = anchor;
-    this._selection.focus  = focus;
-  }
-
   jump(renderer, x, hold_anchor)
   {
     const property = this._object.get();
@@ -27,7 +21,7 @@ class Caret
     {
       const c = this._object.value()[i];
 
-      w = renderer.measure(c);
+      w = renderer.measure(property.font, c);
 
       i += 1;
       d += w;
@@ -46,7 +40,23 @@ class Caret
     return { anchor: this._selection.anchor, focus: this._selection.focus };
   }
 
-  backward(steps, hold_anchor)
+  range()
+  {
+    const { anchor, focus } = this._selection;
+
+    let begin = anchor < focus ? anchor : focus;
+    let end   = anchor < focus ? focus  : anchor;
+
+    return { begin, end };
+  }
+
+  to({ anchor, focus })
+  {
+    this._selection.anchor = anchor;
+    this._selection.focus  = focus;
+  }
+
+  to_left(steps, hold_anchor)
   {
     const { anchor, focus } = this._selection;
 
@@ -83,7 +93,7 @@ class Caret
     }
   }
 
-  forward(steps, hold_anchor)
+  to_right(steps, hold_anchor)
   {
     const { anchor, focus } = this._selection;
 
@@ -122,15 +132,17 @@ class Caret
 
   draw(renderer)
   {
+    const property = this._object.get();
+
     let n = this._selection.focus;
     let w = 0;
 
     for (let i = 0; i < n; ++i)
     {
-      w += renderer.measure(this._object.value()[i]);
-    }
+      const c = this._object.value()[i];
 
-    const property = this._object.get();
+      w += renderer.measure(property.font, c);
+    }
 
     const x = property.x + w;
     const y = property.baseline - property.font.height + 4;

@@ -6,11 +6,6 @@ import Renderer  from './Renderer';
 import Text from './Text';
 
 
-function string_insert(string, position, value)
-{
-  return string.substring(0, position) + value + string.substring(position);
-}
-
 function bounding_by_context(context)
 {
   const left   = context.bounding.left;
@@ -19,23 +14,6 @@ function bounding_by_context(context)
   const bottom = context.caret.baseline;
 
   return new Rectangle(left, right, top, bottom);
-}
-
-function caret_rectangle_by_context(context, rectangle)
-{
-  rectangle.left   = context.caret.x;
-  rectangle.right  = context.caret.x + 2;
-  rectangle.top    = context.caret.baseline - context.font.height - 2;
-  rectangle.bottom = context.caret.baseline - 2;
-}
-
-function caret_draw(context, renderer, rectangle)
-{
-  // 计算光标位置
-  caret_rectangle_by_context(context, rectangle);
-
-  // 绘制光标
-  renderer.draw_rectangle(rectangle, '#000000');
 }
 
 
@@ -196,21 +174,6 @@ function document_object_push_tail(document, renderer, context, text, mc)
 
 // class Editor
 // {
-//   constructor()
-//   {
-//     console.log('Editor constructor');
-//
-//     this.background = '#f0f0f0';
-//
-//     this.renderer = null;
-//
-//     this.size = null;
-//
-//     this.document = null;
-//
-//     this.caret = null;
-//   }
-//
 //   attach(canvas)
 //   {
 //     canvas.style.cursor = 'text';
@@ -441,15 +404,6 @@ function document_object_push_tail(document, renderer, context, text, mc)
 //
 //     this.render();
 //   }
-//
-//   caret_move_top()
-//   {
-//   }
-//
-//   caret_move_bottom()
-//   {
-//     ;
-//   }
 // }
 
 
@@ -459,7 +413,7 @@ class Editor
   {
     console.log('Editor constructor');
 
-    this.background = '#f0f0f0';
+    this.background = '#ffffff';
 
     this.renderer = null;
 
@@ -487,62 +441,93 @@ class Editor
 
     // this.document.insert('这是一个 abcdefghijklmnopqrstuvwxyz 0123456789 ABCDEFGHIJKLMNOPQRSTUVWXYZ 测试');
     this.insert('这是一个 测试');
-
-    this.render();
   }
 
   render()
   {
     this.renderer.clear(this.background, this.size);
 
-    this.document.draw(this.renderer);
+    this.document.draw(this.renderer, this.caret.range());
 
     this.caret.draw(this.renderer);
   }
 
   insert(text)
   {
-    const caret = this.caret;
+    const range = this.caret.range();
 
-    const { anchor, focus } = caret.selection();
+    this.document.mutate(range, text);
 
-    let begin = anchor < focus ? anchor : focus;
-    let end   = anchor < focus ? focus  : anchor;
+    const position = range.begin + text.length;
 
-    this.document.mutate(begin, end, text);
+    this.caret.to({ anchor: position, focus: position });
 
-    const position = begin + text.length;
+    this.render();
+  }
 
-    caret.to({ anchor: position, focus: position });
+  delete_backward()
+  {
+    const range = this.caret.range();
+
+    if (range.begin === range.end)
+    {
+      range.begin -= 1;
+
+      if (range.begin < 0)
+      {
+        range.begin = 0;
+      }
+    }
+
+    this.document.mutate(range, '');
+
+    const position = range.begin;
+
+    this.caret.to({ anchor: position, focus: position });
+
+    this.render();
+  }
+
+  delete_forward()
+  {
+    const range = this.caret.range();
+
+    if (range.begin === range.end)
+    {
+      range.end += 1;
+
+      if (range.end > this.document.length())
+      {
+        range.end = this.document.length();
+      }
+    }
+
+    this.document.mutate(range, '');
+
+    const position = range.begin;
+
+    this.caret.to({ anchor: position, focus: position });
 
     this.render();
   }
 
   caret_move_left(hold_anchor)
   {
-    this.caret.backward(1, hold_anchor);
+    this.caret.to_left(1, hold_anchor);
 
     this.render();
   }
 
   caret_move_right(hold_anchor)
   {
-    this.caret.forward(1, hold_anchor);
+    this.caret.to_right(1, hold_anchor);
 
     this.render();
   }
 
-  caret_move_top()
+  caret_jump(x, y, hold_anchor)
   {
-  }
-
-  caret_move_bottom()
-  {
-  }
-
-  caret_jump(x, y)
-  {
-    this.caret.jump(this.renderer, x);
+    this.caret.jump(this.renderer, x, hold_anchor);
 
     this.render();
   }
