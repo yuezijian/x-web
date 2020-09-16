@@ -1,17 +1,113 @@
+import Location from './Location';
+
+
 class Caret
 {
-  constructor(object)
+  constructor(document)
   {
-    this._object = object;
+    this._document = document;
 
-    this._selection = { anchor: 0, focus: 0 };
+    this._selection =
+      {
+        anchor: new Location(),
+        focus:  new Location()
+      };
+  }
+
+  selection()
+  {
+    const anchor = Location.clone(this._selection.anchor);
+    const focus  = Location.clone(this._selection.focus );
+
+    return { anchor, focus };
+  }
+
+  range()
+  {
+    const { anchor, focus } = this._selection;
+
+    let b = Location.compare(anchor, focus) < 0 ? anchor : focus ;
+    let e = Location.compare(anchor, focus) < 0 ? focus  : anchor;
+
+    return { begin: Location.clone(b), end: Location.clone(e) };
+  }
+
+  select({ anchor, focus })
+  {
+    this._selection.anchor.assign(anchor);
+    this._selection.focus.assign(focus);
+  }
+
+  to(location)
+  {
+    this.select({ anchor: location, focus: location });
+  }
+
+  backward(steps, hold_anchor)
+  {
+    const { anchor, focus } = this._selection;
+
+    if (hold_anchor)
+    {
+      const location = this._document.location_backward(focus, steps);
+
+      this.select({ anchor, focus: location });
+    }
+    else
+    {
+      const comparison = Location.compare(anchor, focus);
+
+      if (comparison !== 0)
+      {
+        const location = comparison < 0 ? anchor : focus
+
+        this.to(location);
+      }
+      else
+      {
+        const location = this._document.location_backward(focus, steps);
+
+        this.to(location);
+      }
+    }
+  }
+
+  forward(steps, hold_anchor)
+  {
+    const { anchor, focus } = this._selection;
+
+    if (hold_anchor)
+    {
+      const location = this._document.location_forward(focus, steps);
+
+      this.select({ anchor, focus: location });
+    }
+    else
+    {
+      const comparison = Location.compare(anchor, focus);
+
+      if (comparison !== 0)
+      {
+        const location = comparison < 0 ? focus : anchor
+
+        this.to(location);
+      }
+      else
+      {
+        const location = this._document.location_forward(focus, steps);
+
+        this.to(location);
+      }
+    }
   }
 
   jump(renderer, x, hold_anchor)
   {
-    const property = this._object.get();
+    return;
 
-    const n = this._object.length();
+    const property = this._document.get();
+
+    const n = this._document.length();
 
     let i = 0;
     let d = property.x;
@@ -19,7 +115,7 @@ class Caret
 
     while (i < n && d < x)
     {
-      const c = this._object.value()[i];
+      const c = this._document.value()[i];
 
       w = renderer.measure(property.font, c);
 
@@ -32,114 +128,30 @@ class Caret
       i -= 1;
     }
 
-    this.to({ anchor: hold_anchor ? this._selection.anchor : i, focus: i });
-  }
-
-  selection()
-  {
-    return { anchor: this._selection.anchor, focus: this._selection.focus };
-  }
-
-  range()
-  {
-    const { anchor, focus } = this._selection;
-
-    let begin = anchor < focus ? anchor : focus;
-    let end   = anchor < focus ? focus  : anchor;
-
-    return { begin, end };
-  }
-
-  to({ anchor, focus })
-  {
-    this._selection.anchor = anchor;
-    this._selection.focus  = focus;
-  }
-
-  to_left(steps, hold_anchor)
-  {
-    const { anchor, focus } = this._selection;
-
     if (hold_anchor)
     {
-      let i = focus - steps;
-
-      if (i < 0)
-      {
-        i = 0;
-      }
-
-      this.to({ anchor, focus: i });
+      this.select({ anchor: this._selection.anchor, focus: i });
     }
     else
     {
-      if (anchor !== focus)
-      {
-        const position = anchor < focus ? anchor : focus
-
-        this.to({ anchor: position, focus: position });
-      }
-      else
-      {
-        let i = focus - steps;
-
-        if (i < 0)
-        {
-          i = 0;
-        }
-
-        this.to({ anchor: i, focus: i });
-      }
-    }
-  }
-
-  to_right(steps, hold_anchor)
-  {
-    const { anchor, focus } = this._selection;
-
-    if (hold_anchor)
-    {
-      let i = focus + steps;
-
-      if (i > this._object.length())
-      {
-        i = this._object.length();
-      }
-
-      this.to({ anchor, focus: i });
-    }
-    else
-    {
-      if (anchor !== focus)
-      {
-        const position = anchor < focus ? focus : anchor
-
-        this.to({ anchor: position, focus: position });
-      }
-      else
-      {
-        let i = focus + steps;
-
-        if (i > this._object.length())
-        {
-          i = this._object.length();
-        }
-
-        this.to({ anchor: i, focus: i });
-      }
+      this.to(i);
     }
   }
 
   draw(renderer)
   {
-    const property = this._object.get();
+    const focus = this._selection.focus;
 
-    let n = this._selection.focus;
+    const object = this._document.child(focus.path());
+
+    const property = object.get();
+
+    let n = focus.offset();
     let w = 0;
 
     for (let i = 0; i < n; ++i)
     {
-      const c = this._object.value()[i];
+      const c = object.value()[i];
 
       w += renderer.measure(property.font, c);
     }

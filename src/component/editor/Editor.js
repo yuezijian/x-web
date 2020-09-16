@@ -1,9 +1,9 @@
 import Caret from './Caret';
+import Document from './Document';
 import Context from "./Context";
+import Location from './Location';
 import Rectangle from './Rectangle';
 import Renderer  from './Renderer';
-
-import Text from './Text';
 
 
 function bounding_by_context(context)
@@ -401,8 +401,6 @@ function document_object_push_tail(document, renderer, context, text, mc)
 //
 //       document_object_forward(this.document, this.context);
 //     }
-//
-//     this.render();
 //   }
 // }
 
@@ -430,24 +428,18 @@ class Editor
 
     this.renderer = new Renderer(canvas);
 
-    // 测试
-
     this.renderer.clear(this.background, this.size);
 
-    this.document = new Text();
-    this.document.set({ baseline: 32, font: { family: 'courier', height: 32 }, color: '#ff0000' });
+    this.document = new Document();
 
     this.caret = new Caret(this.document);
-
-    // this.document.insert('这是一个 abcdefghijklmnopqrstuvwxyz 0123456789 ABCDEFGHIJKLMNOPQRSTUVWXYZ 测试');
-    this.insert('这是一个 测试');
   }
 
   render()
   {
     this.renderer.clear(this.background, this.size);
 
-    this.document.draw(this.renderer, this.caret.range());
+    this.document.draw(this.renderer);
 
     this.caret.draw(this.renderer);
   }
@@ -458,9 +450,11 @@ class Editor
 
     this.document.mutate(range, text);
 
-    const position = range.begin + text.length;
+    this.caret.forward(text.length);
 
-    this.caret.to({ anchor: position, focus: position });
+    // or
+    // const location = this.document.location_forward(range.begin, text.length);
+    // this.caret.forward(location);
 
     this.render();
   }
@@ -483,7 +477,7 @@ class Editor
 
     const position = range.begin;
 
-    this.caret.to({ anchor: position, focus: position });
+    this.caret.to(position);
 
     this.render();
   }
@@ -506,21 +500,21 @@ class Editor
 
     const position = range.begin;
 
-    this.caret.to({ anchor: position, focus: position });
+    this.caret.to(position);
 
     this.render();
   }
 
   caret_move_left(hold_anchor)
   {
-    this.caret.to_left(1, hold_anchor);
+    this.caret.backward(1, hold_anchor);
 
     this.render();
   }
 
   caret_move_right(hold_anchor)
   {
-    this.caret.to_right(1, hold_anchor);
+    this.caret.forward(1, hold_anchor);
 
     this.render();
   }

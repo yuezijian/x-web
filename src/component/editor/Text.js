@@ -84,6 +84,8 @@ class Text
 
   draw(renderer, selection)
   {
+    // 将 selection 的绘制放到光标绘制逻辑里
+
     renderer.draw_text(this._font, this._value, this._x, this._baseline, this._color);
 
     if (selection)
@@ -92,8 +94,6 @@ class Text
 
       if (begin !== end)
       {
-        renderer.draw_text(this._font, this._value, this._x, this._baseline, this._color);
-
         let x = this._x;
 
         for (let i = 0; i < begin; ++i)
