@@ -1,122 +1,228 @@
+import Location from "./Location";
+
+import Segment from './Segment';
+
+
 class Text
 {
   constructor()
   {
-    this._value = '';
+    this._color = '#000000';
 
-    this._x        = 0;
-    this._baseline = 0;
-    this._width    = 0;
+    this._font =
+      {
+        family: '',
+        height: 0
+      };
 
-    this._font = { height: 0 };
+    this._bounding =
+      {
+        left:   0,
+        top:    0,
+        right:  0,
+        bottom: 0
+      };
 
-    this._color = '#000000'
+    this._selection =
+      {
+        anchor: 0,
+        focus:  0
+      };
+
+    this._segments = [new Segment()];  // 至少存在一段
   }
 
-  value()
+  set({ bounding, color, font })
   {
-    return this._value;
-  }
-
-  set({ x, baseline, font, color })
-  {
-    if (x)
+    if (bounding)
     {
-      this._x = x;
-    }
-
-    if (baseline)
-    {
-      this._baseline = baseline;
-    }
-
-    if (font)
-    {
-      this._font = font;
+      this._bounding = bounding;
     }
 
     if (color)
     {
       this._color = color;
     }
+
+    if (font)
+    {
+      this._font = font;
+    }
   }
 
   get()
   {
-    const object =
+    const property =
       {
-        x:        this._x,
-        baseline: this._baseline,
-        font:     this._font,
-        color:    this._color
+        bounding: this._bounding,
+        color:    this._color,
+        font:     this._font
       };
 
-    return object;
+    return property;
   }
 
   length()
   {
-    return this._value.length;
+    return this._segments.reduce((a, c) => a + c.length(), 0);
   }
 
-  mutate(selection, text)
+  mutate(renderer, { begin, end }, text)
   {
-    const { begin, end } = selection;
-
-    if (begin === end)
+    if (Location.compare(begin, end) !== 0)
     {
-      const offset = begin;
-
-      if (this._value.length === offset)
+      if (begin.path() === end.path())
       {
-        this._value += text;
+        const o_begin = this._segments[begin.path()    ];
+        const o_end   = this._segments[begin.path() + 1];
+
+        o_begin.mutate({ begin: begin.offset(), end: end.offset() }, '');
+
+        if (o_end !== undefined)
+        {
+          o_begin.mutate({ begin: o_begin.length(), end: o_begin.length() }, o_end.value());
+
+          this._segments.splice(begin.path() + 1, 1);
+        }
       }
       else
       {
-        this._value = this._value.substring(0, offset) + text + this._value.substring(offset);
+        const o_begin = this._segments[begin.path()];
+        const o_end   = this._segments[  end.path()];
+
+        const tt = o_end.slice({ begin: end.offset(), end: o_end.length() });
+
+        o_begin.mutate({ begin: begin.offset(), end: o_begin.length() }, tt);
+
+        this._segments.splice(begin.path() + 1, end.path() - begin.path());
       }
     }
-    else
+
+    const location = begin;
+
+    let index = location.path();
+
+    let object = this._segments[index];
+
+    const offset = location.offset();
+
+    object.mutate({ begin: offset, end: offset }, text);
+
+    while (object !== undefined)
     {
-      this._value = this._value.substring(0, begin) + text + this._value.substring(end);
+      const exceed = object.exceed(renderer, this._bounding, this._font);
+
+      if (exceed === undefined)
+      {
+        break;
+      }
+
+      if (index + 1 === this._segments.length)
+      {
+        const segment = new Segment();
+
+        segment.mutate({ begin: 0, end: 0 }, exceed);
+
+        this._segments.push(segment);
+      }
+      else
+      {
+        object = this._segments[index + 1];
+
+        object.mutate({ begin: 0, end: 0 }, exceed);
+      }
+
+      index += 1;
+
+      object = this._segments[index];
     }
   }
 
-  draw(renderer, selection)
+  location_backward(location, steps)
   {
-    // 将 selection 的绘制放到光标绘制逻辑里
+    let index  = location.path();
+    let offset = location.offset();
 
-    renderer.draw_text(this._font, this._value, this._x, this._baseline, this._color);
+    let object = this._segments[index];
 
-    if (selection)
+    while (true)
     {
-      const { begin, end } = selection;
-
-      if (begin !== end)
+      if (steps < offset)
       {
-        let x = this._x;
+        offset -= steps;
 
-        for (let i = 0; i < begin; ++i)
-        {
-          x += renderer.measure(this._font, this._value[i]);
-        }
-
-        let width = 0;
-
-        for (let i = begin; i < end; ++i)
-        {
-          width += renderer.measure(this._font, this._value[i]);
-        }
-
-        const y = this._baseline - this._font.height + 4;
-
-        const height = this._font.height;
-
-        renderer.draw_rectangle({ x, y, width, height }, '#286fff');
-
-        renderer.draw_text(this._font, this._value.substring(begin, end), x, this._baseline, '#ffffff');
+        return Location.create(index, offset);
       }
+
+      if (index - 1 < 0)
+      {
+        return Location.create(0, 0);
+      }
+
+      index -= 1;
+
+      steps -= offset;
+
+      object = this._segments[index];
+
+      offset = object.length();
     }
+  }
+
+  location_forward(location, steps)
+  {
+    let index  = location.path();
+    let offset = location.offset();
+
+    let object = this._segments[index];
+
+    while (true)
+    {
+      if (offset + steps <= object.length())
+      {
+        offset += steps;
+
+        return Location.create(index, offset);
+      }
+
+      if (index + 1 >= this._segments.length)
+      {
+        return Location.create(index, object.length());
+      }
+
+      index += 1;
+
+      steps -= object.length() - offset;
+
+      object = this._segments[index];
+
+      offset = 0;
+    }
+  }
+
+  draw(renderer)
+  {
+    // todo 根据 _selection 成员计算 segment 的选择
+
+    let baseline = this._font.height;
+
+    for (const segment of this._segments)
+    {
+      const x = this._bounding.left;
+
+      segment.set({ x, baseline: this._bounding.top + baseline });
+
+      segment.draw(renderer, this._color, this._font);
+
+      baseline += this._font.height * 1.5;
+    }
+  }
+
+  info(renderer, location)
+  {
+    const segment = this._segments[location.path()];
+
+    return segment.info(renderer, this._font, location.offset());
   }
 }
 

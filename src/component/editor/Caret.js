@@ -103,7 +103,14 @@ class Caret
 
   jump(renderer, x, hold_anchor)
   {
+    // todo 这里的鼠标选择需要跨行了
+    // 根据鼠标起始位置，和移动，直接进行光标的 forward 或者 backward
+
     return;
+
+    // 首先，点击在哪一行
+
+    // 获得那一行，判断点在啥位置，计算出来
 
     const property = this._document.get();
 
@@ -142,25 +149,23 @@ class Caret
   {
     const focus = this._selection.focus;
 
-    const object = this._document.child(focus.path());
+    // todo 实现这里
+    //
+    // 这里的 context 将包含一切信息
+    //
+    // const context = this._document.context(focus);
+
+    const object = this._document.child(0);
 
     const property = object.get();
 
-    let n = focus.offset();
-    let w = 0;
+    const info = object.info(renderer, focus);
 
-    for (let i = 0; i < n; ++i)
-    {
-      const c = object.value()[i];
-
-      w += renderer.measure(property.font, c);
-    }
-
-    const x = property.x + w;
-    const y = property.baseline - property.font.height + 4;
+    const x = info.x;
+    const y = info.baseline - property.font.height + 4;
 
     const width  = 3;
-    const height = property.font.height;
+    const height = property.font.height + 2;
 
     renderer.draw_rectangle({ x, y, width, height }, '#000000');
   }

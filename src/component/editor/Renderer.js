@@ -1,3 +1,28 @@
+// const text =
+//   {
+//     align:
+//       {
+//         start: 'start',  // 默认值
+//         end:   'end',
+//
+//         left:   'left',
+//         right:  'right',
+//         center: 'center',
+//       },
+//
+//     baseline:
+//       {
+//         alphabetic:  'alphabetic',  // 默认值
+//         hanging:     'hanging',
+//         ideographic: 'ideographic',
+//
+//         top:    'top',
+//         middle: 'middle',
+//         bottom: 'bottom'
+//       }
+//   };
+
+
 class Renderer
 {
   constructor(canvas)
@@ -29,6 +54,14 @@ class Renderer
     this.device.font = `${ font.height }px ${ font.family}`;
 
     this.device.fillText(text, x, baseline);
+
+    // {
+    //   this.device.strokeStyle = '#ff0000';
+    //
+    //   const width = this.device.measureText(text).width;
+    //
+    //   this.device.strokeRect(x, baseline - font.height, width, font.height);
+    // }
   }
 
   measure(font, text)

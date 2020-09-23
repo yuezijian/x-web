@@ -1,5 +1,3 @@
-import Location from './Location';
-
 import Text from './Text';
 
 
@@ -9,103 +7,48 @@ class Document
   {
     const text = new Text();
 
-    text.set({ baseline: 32, font: { family: 'courier', height: 32 }, color: '#000000' });
+    const bounding =
+      {
+        left:   0,
+        top:    0,
+        right:  800,
+        bottom: 0
+      };
+
+    const font =
+      {
+        family: 'courier',
+        height: 32
+      };
+
+    text.set({ bounding, color: '#000000', font });
 
     this._children = [text];  // 至少存在一个对象
   }
 
-  child(index)
+  child(path)
   {
-    return this._children[index];
+    return this._children[path];
   }
 
-  mutate({ begin, end }, text)
+  length()
   {
-    // console.log(begin.path(), begin.offset());
-    // console.log(  end.path(),   end.offset());
+    return this._children.reduce((a, c) => a + c.length(), 0);
+  }
 
-    // console.log(text);
-
-    if (Location.compare(begin, end) !== 0)
-    {
-      // 删掉 begin 和 end 之间的对象或字符
-      ;
-    }
-    else
-    {
-      const location = begin;
-
-      const object = this._children[location.path()];
-
-      const offset = location.offset();
-
-      object.mutate({ begin: offset, end: offset }, text);
-
-      // 判断当前 object 是否越过边界，产生新的对象
-      ;
-    }
+  mutate(renderer, { begin, end }, text)
+  {
+    this._children[0].mutate(renderer, { begin, end }, text);
   }
 
   location_backward(location, steps)
   {
-    let index  = location.path();
-    let offset = location.offset();
-
-    let object = this._children[index];
-
-    while (true)
-    {
-      if (steps < offset)
-      {
-        offset -= steps;
-
-        return Location.create(index, offset);
-      }
-
-      if (index - 1 < 0)
-      {
-        return Location.create(0, 0);
-      }
-
-      index -= 1;
-
-      steps -= offset;
-
-      object = this._children[index];
-
-      offset = object.length();
-    }
+    return this._children[0].location_backward(location, steps);
   }
 
   location_forward(location, steps)
   {
-    let index  = location.path();
-    let offset = location.offset();
-
-    let object = this._children[index];
-
-    while (true)
-    {
-      if (offset + steps <= object.length())
-      {
-        offset += steps;
-
-        return Location.create(index, offset);
-      }
-
-      if (index + 1 >= this._children.length)
-      {
-        return Location.create(index, object.length());
-      }
-
-      index += 1;
-
-      steps -= object.length() - offset;
-
-      object = this._children[index];
-
-      offset = 0;
-    }
+    return this._children[0].location_forward(location, steps);
   }
 
   draw(renderer)
