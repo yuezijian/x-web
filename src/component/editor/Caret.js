@@ -101,8 +101,12 @@ class Caret
     }
   }
 
-  jump(renderer, x, hold_anchor)
+  jump(renderer, x, y, hold_anchor)
   {
+    const lo = this._document._children[0].locate(x, y);
+
+    this.to(lo);
+
     // todo 这里的鼠标选择需要跨行了
     // 根据鼠标起始位置，和移动，直接进行光标的 forward 或者 backward
 

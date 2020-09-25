@@ -69,8 +69,23 @@ class Segment
 
   set({ x, baseline })
   {
-    this._x        = x;
-    this._baseline = baseline;
+    if (x)
+    {
+      this._x = x;
+    }
+
+    if (baseline)
+    {
+      this._baseline = baseline;
+    }
+  }
+
+  get()
+  {
+    const x        = this._x;
+    const baseline = this._baseline;
+
+    return { x, baseline };
   }
 
   info(renderer, font, offset)

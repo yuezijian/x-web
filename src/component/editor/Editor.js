@@ -109,7 +109,7 @@ class Editor
 
   caret_jump(x, y, hold_anchor)
   {
-    this.caret.jump(this.renderer, x, hold_anchor);
+    this.caret.jump(this.renderer, x, y, hold_anchor);
 
     this.render();
   }

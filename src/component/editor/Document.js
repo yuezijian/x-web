@@ -9,10 +9,10 @@ class Document
 
     const bounding =
       {
-        left:   0,
-        top:    0,
-        right:  800,
-        bottom: 0
+        left:  0,
+        right: 800,
+
+        top: 0
       };
 
     const font =
