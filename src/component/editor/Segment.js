@@ -88,7 +88,7 @@ class Segment
     return { x, baseline };
   }
 
-  info(renderer, font, offset)
+  character_x(renderer, font, offset)
   {
     let width = 0;
 
@@ -98,6 +98,37 @@ class Segment
     }
 
     return { x: this._x + width, baseline: this._baseline };
+  }
+
+  character_offset(renderer, font, x)
+  {
+    if (x < this._x)
+    {
+      return 0;
+    }
+
+    if (x > this._x + renderer.measure(font, this._value))
+    {
+      return this._value.length - 1;
+    }
+
+    let index    = 0;
+    let position = 0;
+
+    for (let i = 0; i < this._value.length; ++i)
+    {
+      const width = renderer.measure(font, this._value[i]);
+
+      if (this._x + position - width * 0.5 > x)
+      {
+        break;
+      }
+
+      index     = i;
+      position += width;
+    }
+
+    return index;
   }
 
   draw(renderer, color, font, selection)

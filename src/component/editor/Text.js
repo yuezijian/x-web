@@ -3,8 +3,6 @@ import Location from "./Location";
 import Segment from './Segment';
 
 
-// todo 需要计算首行 baseline
-
 class Text
 {
   constructor()
@@ -34,8 +32,13 @@ class Text
     this._segments = [new Segment()];  // 至少存在一段
   }
 
-  set({ bounding, color, font })
+  set({ font, bounding, color })
   {
+    if (font)
+    {
+      this._font = font;
+    }
+
     if (bounding)
     {
       this._bounding.left  = bounding.left;
@@ -48,34 +51,34 @@ class Text
       this._color = color;
     }
 
-    if (font)
+    if (font || bounding)
     {
-      this._font = font;
+      const x = this._bounding.left;
+
+      let baseline = this._bounding.top + this._font.height;
+
+      this._segments[0].set({ x, baseline });
+
+      for (let i = 1; i < this._segments.length; ++i)
+      {
+        baseline += this._font.height * 1.5;
+
+        const segment = this._segments[i];
+
+        segment.set({ baseline });
+      }
+
+      this._bounding.bottom = baseline;
     }
-
-    let baseline = this._bounding.top + this._font.height;
-
-    this._segments[0].set({ baseline });
-
-    for (let i = 1; i < this._segments.length; ++i)
-    {
-      baseline += this._font.height * 1.5;
-
-      const segment = this._segments[i];
-
-      segment.set({ baseline });
-    }
-
-    this._bounding.bottom = baseline;
   }
 
   get()
   {
     const property =
       {
+        font:     this._font,
         bounding: this._bounding,
-        color:    this._color,
-        font:     this._font
+        color:    this._color
       };
 
     return property;
@@ -163,43 +166,47 @@ class Text
     }
   }
 
-  locate(x, y)
+  locate(renderer, x, y)
   {
-    let index = 0;
-
     if (y <= this._bounding.top)
     {
-      index = 0;
+      return Location.create(0, 0);
     }
     else if (y >= this._bounding.bottom)
     {
-      index = this._segments.length - 1;
+      const index = this._segments.length - 1;
+
+      const segment = this._segments[index];
+
+      const offset = segment.length() - 1;
+
+      return Location.create(index, offset);
     }
-    else
+
+    let index = 0;
+
+    let delta = this._bounding.bottom - this._bounding.top;
+
+    for (let i = 0; i < this._segments.length; ++i)
     {
-      let delta = this._bounding.bottom - this._bounding.top;
+      const segment = this._segments[i];
 
-      for (let i = 0; i < this._segments.length; i++)
+      const midline = segment.get().baseline - this._font.height * 0.5
+
+      const d = Math.abs(y - midline);
+
+      if (d < delta)
       {
-        const segment = this._segments[i];
-
-        const midline = segment.get().baseline + this._font.height * 0.5
-
-        const d = Math.abs(y - midline);
-
-        if (d < delta)
-        {
-          index = i;
-          delta = d;
-        }
+        index = i;
+        delta = d;
       }
     }
 
-    // segment 判断在哪一个 offset 上
-    // x
-    ;
+    const segment = this._segments[index];
 
-    return Location.create(index, 10);
+    const offset = segment.character_offset(renderer, this._font, x);
+
+    return Location.create(index, offset);
   }
 
   location_backward(location, steps)
@@ -268,6 +275,25 @@ class Text
   {
     // todo 根据 _selection 成员计算 segment 的选择
 
+    const { anchor, focus } = this._selection;
+
+    if (anchor !== focus)
+    {
+      let begin = anchor < focus ? anchor : focus ;
+      let end   = anchor < focus ? focus  : anchor;
+
+      for (const segment of this._segments)
+      {
+        begin -= segment.length();
+        end   -= segment.length();
+
+        if (begin <= 0)
+        {
+          console.log(begin);
+        }
+      }
+    }
+
     for (const segment of this._segments)
     {
       segment.draw(renderer, this._color, this._font);
@@ -278,7 +304,7 @@ class Text
   {
     const segment = this._segments[location.path()];
 
-    return segment.info(renderer, this._font, location.offset());
+    return segment.character_x(renderer, this._font, location.offset());
   }
 }
 

@@ -65,7 +65,7 @@ class Editor
 
     this.document.mutate(this.renderer, { begin, end }, '');
 
-    this.caret.to(begin);
+    this.caret.set(begin);
 
     this.render();
   }
@@ -88,7 +88,7 @@ class Editor
 
     const position = range.begin;
 
-    this.caret.to(position);
+    this.caret.set(position);
 
     this.render();
   }
@@ -109,7 +109,7 @@ class Editor
 
   caret_jump(x, y, hold_anchor)
   {
-    this.caret.jump(this.renderer, x, y, hold_anchor);
+    this.caret.to(this.renderer, x, y, hold_anchor);
 
     this.render();
   }

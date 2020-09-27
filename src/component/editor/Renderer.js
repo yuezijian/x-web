@@ -55,13 +55,13 @@ class Renderer
 
     this.device.fillText(text, x, baseline);
 
-    // {
-    //   this.device.strokeStyle = '#ff0000';
-    //
-    //   const width = this.device.measureText(text).width;
-    //
-    //   this.device.strokeRect(x, baseline - font.height, width, font.height);
-    // }
+    {
+      this.device.strokeStyle = '#ff0000';
+
+      const width = this.device.measureText(text).width;
+
+      this.device.strokeRect(x, baseline - font.height, width, font.height);
+    }
   }
 
   measure(font, text)

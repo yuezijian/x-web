@@ -4,7 +4,6 @@ import Editor       from './editor/Editor';
 import InputAdapter from './editor/InputAdapter';
 
 
-
 // function setup(canvas, size)
 // {
 //   const pixel_ratio = window.devicePixelRatio;
@@ -171,10 +170,6 @@ import InputAdapter from './editor/InputAdapter';
 
 
 
-
-
-
-
 const editor = new Editor();
 
 const adapter = new InputAdapter(editor);
@@ -221,7 +216,7 @@ function XEditor()
   {
     editor.attach(reference.current);
 
-    editor.insert('HTML5 Canvas 文档编辑器\n\n支持选择\n\n支持换行\n\n需要创建若干测试，以保证在后续开发过程中，已有行为的正确性。\n\n0123456789\nabcdefghijklmnopqrstuvwxyz\nABCDEFGHIJKLMNOPQRSTUVWXYZ\n\n');
+    editor.insert('HTML5 Canvas 电子病历编辑器\n\n需要创建若干测试，以保证在后续开发过程中，已有行为的正确性。\n\n0123456789\nabcdefghijklmnopqrstuvwxyz\nABCDEFGHIJKLMNOPQRSTUVWXYZ\n\n');
     // editor.insert('HTML5 Canvas 文档编辑器');
   };
 

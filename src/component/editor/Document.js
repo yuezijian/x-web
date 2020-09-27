@@ -9,10 +9,10 @@ class Document
 
     const bounding =
       {
-        left:  0,
+        left:  40,
         right: 800,
 
-        top: 0
+        top: 40
       };
 
     const font =
@@ -49,6 +49,15 @@ class Document
   location_forward(location, steps)
   {
     return this._children[0].location_forward(location, steps);
+  }
+
+  select({ anchor, focus })
+  {
+    // 需要做好几个对应
+
+    console.log(anchor)
+    console.log(focus)
+    // this._children[0].select(anchor, focus);
   }
 
   draw(renderer)

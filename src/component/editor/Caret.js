@@ -36,9 +36,11 @@ class Caret
   {
     this._selection.anchor.assign(anchor);
     this._selection.focus.assign(focus);
+
+    this._document.select(this._selection);
   }
 
-  to(location)
+  set(location)
   {
     this.select({ anchor: location, focus: location });
   }
@@ -61,13 +63,13 @@ class Caret
       {
         const location = comparison < 0 ? anchor : focus
 
-        this.to(location);
+        this.set(location);
       }
       else
       {
         const location = this._document.location_backward(focus, steps);
 
-        this.to(location);
+        this.set(location);
       }
     }
   }
@@ -90,62 +92,28 @@ class Caret
       {
         const location = comparison < 0 ? focus : anchor
 
-        this.to(location);
+        this.set(location);
       }
       else
       {
         const location = this._document.location_forward(focus, steps);
 
-        this.to(location);
+        this.set(location);
       }
     }
   }
 
-  jump(renderer, x, y, hold_anchor)
+  to(renderer, x, y, hold_anchor)
   {
-    const lo = this._document._children[0].locate(x, y);
-
-    this.to(lo);
-
-    // todo 这里的鼠标选择需要跨行了
-    // 根据鼠标起始位置，和移动，直接进行光标的 forward 或者 backward
-
-    return;
-
-    // 首先，点击在哪一行
-
-    // 获得那一行，判断点在啥位置，计算出来
-
-    const property = this._document.get();
-
-    const n = this._document.length();
-
-    let i = 0;
-    let d = property.x;
-    let w = 0;
-
-    while (i < n && d < x)
-    {
-      const c = this._document.value()[i];
-
-      w = renderer.measure(property.font, c);
-
-      i += 1;
-      d += w;
-    }
-
-    if (d - x > w * 0.5)
-    {
-      i -= 1;
-    }
+    const location = this._document._children[0].locate(renderer, x, y);
 
     if (hold_anchor)
     {
-      this.select({ anchor: this._selection.anchor, focus: i });
+      this.select({ anchor: this._selection.anchor, focus: location });
     }
     else
     {
-      this.to(i);
+      this.set(location);
     }
   }
 
